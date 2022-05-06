@@ -1,0 +1,33 @@
+#                                                               --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
+# target name        accession  query name           accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
+#------------------- ---------- -------------------- ---------- --------- ------ ----- --------- ------ -----   --- --- --- --- --- --- --- --- ---------------------
+TAS2R                PF05296.16 TR119_MOUSE/1-294    Q9JKT2.1     7.9e-95  303.5  32.1   8.8e-95  303.3  32.1   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TA2R1_HUMAN/1-296    Q9NYW7.1     1.1e-97  312.9  34.9   1.2e-97  312.7  34.9   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 T2R14_HUMAN/1-299    Q9NYV8.1    3.3e-107  344.1  37.3  3.6e-107  344.0  37.3   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 T2R13_HUMAN/1-300    Q9NYV9.1    7.9e-113  362.6  41.1  8.8e-113  362.4  41.1   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 T2R13_RAT/1-300      Q9JKT7.1    2.2e-111  357.8  40.2  2.5e-111  357.7  40.2   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 G3V6Q7_RAT/1-297     G3V6Q7.1    4.7e-107  343.6  33.2  5.3e-107  343.5  33.2   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 T2R10_HUMAN/1-296    Q9NYW0.3    1.6e-116  374.7  34.3  1.8e-116  374.6  34.3   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TR107_RAT/1-297      Q9JKT9.1    1.9e-110  354.8  34.5  2.1e-110  354.6  34.5   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TR105_RAT/1-298      Q9JKT5.1    1.2e-115  371.9  32.5  1.3e-115  371.7  32.5   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TR114_RAT/1-298      Q9JKT8.1    2.1e-110  354.6  43.8  2.4e-110  354.4  43.8   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TA2R8_HUMAN/1-304    Q9NYW2.1    7.5e-115  369.2  35.6  8.4e-115  369.1  35.6   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TA2R3_HUMAN/1-303    Q9NYW6.3    1.2e-118  381.7  23.8  1.4e-118  381.5  23.8   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TA2R9_HUMAN/1-301    Q9NYW1.1    3.2e-119  383.6  30.6  3.6e-119  383.4  30.6   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TA2R7_HUMAN/1-304    Q9NYW3.1    4.9e-126  406.0  26.4  5.4e-126  405.8  26.4   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TA2R5_HUMAN/1-291    Q9NYW4.1     2.3e-99  318.4  20.8   2.5e-99  318.2  20.8   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TA2R4_MOUSE/1-297    Q9JKT3.1     3.3e-96  308.0  33.7   3.7e-96  307.9  33.7   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 TA2R4_HUMAN/1-299    Q9NYW5.1    8.8e-101  323.0  33.3  9.8e-101  322.9  33.3   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 T2R41_RAT/1-303      Q9JKE7.1    3.8e-106  340.7  30.2  4.2e-106  340.5  30.2   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 T2R16_HUMAN/1-290    Q9NYV7.1     6.8e-93  297.1  41.2   7.9e-93  296.9  41.2   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+TAS2R                PF05296.16 T2R16_RAT/1-297      Q9JKU0.1       2e-91  292.3  41.9   2.2e-91  292.2  41.9   1.0   1   0   0   1   1   1   1 Taste receptor protein (TAS2R)
+#
+# Program:         hmmscan
+# Version:         3.3 (Nov 2019)
+# Pipeline mode:   SCAN
+# Query file:      SEQUENCES/ALIGNMENTS/seed.sto
+# Target file:     HMM_PROFILE/SEED/seed.hmm
+# Option settings: hmmscan -o /dev/null --tblout RESULTS/SEED/res_seed.txt --qformat stockholm HMM_PROFILE/SEED/seed.hmm SEQUENCES/ALIGNMENTS/seed.sto 
+# Current dir:     /mnt/d/Travail/Master/Semestre 8/Stage/GRA
+# Date:            Fri May  6 14:39:41 2022
+# [ok]
