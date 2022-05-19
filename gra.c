@@ -20,6 +20,39 @@ struct String {
     char *str;
 };
 
+char** split_string(char *str, char *sep) {
+    size_t count_tokens = 0;
+    int c = 0;
+ 	for (int i = 0; i < strlen(str) - 1; i++) {
+        if (str[i] >= 33 && str[i] < 127) { c = 1; }
+  		if (c && str[i] == sep[0] && str[i + 1] != sep[0] && str[i + 1] != '\0') {
+  			count_tokens++;
+ 		}
+	}
+    char **tokens = malloc(++count_tokens * sizeof(char*));
+    printf("Nombre token = %i\n", count_tokens);
+
+    char *s = strdup(str);
+    char *tok = s, *end = s;
+    int i = 0;
+    while (tok != NULL) {
+        strsep(&end, sep);
+        if (tok[0] != '\0') {
+            tokens[i] = strdup(tok);
+            i++;
+        }
+        tok = end;
+    }
+
+    // for (int i = 0; i < count_tokens; i++) {
+    //     printf("tokens n°%i : %s\n", i, tokens[i]);
+    // }
+
+    free(s);
+
+    return tokens;
+}
+
 struct String getFiles(int n, char **filenames) {
     FILE **files = calloc(n, sizeof(FILE*));
 
@@ -58,7 +91,7 @@ struct String getFiles(int n, char **filenames) {
     return res;
 }
 
-FILE* hmmscan(char *profile, struct String fasta) {
+FILE* hmmscan(char *profile, char *fasta) {
     /**
         hmmscan -o "/dev/null" \
         --tblout "RESULTS/${name^^}/res_$DBname.txt" \
@@ -66,16 +99,17 @@ FILE* hmmscan(char *profile, struct String fasta) {
         "HMM_PROFILE/${name^^}/$name.hmm" \
         $db
      */
-    char *fun = "/bin/bash -c 'hmmscan -o /dev/null --tblout /dev/stdout --qformat fasta ";
-    size_t l_arg = strlen(profile) + strlen(" /dev/stdin <<< \"\"'") + fasta.len;
-    char *arg = calloc(l_arg, sizeof(char));
-    snprintf(arg, l_arg, "%s /dev/stdin <<< \"%s\"'", profile, fasta.str);
+    char *fun = "/bin/bash -c '"
+        "hmmscan -o /dev/null "
+        "--tblout /dev/stdout "
+        "--qformat fasta ";
 
-    size_t l_cmd = strlen(fun) + l_arg;
+    size_t l_cmd = strlen(fun) + strlen(profile) + strlen(fasta) + 3;
     char *cmd = calloc(l_cmd, sizeof(char));
-    strcpy(cmd, fun);
-    strcat(cmd, arg);
+    snprintf(cmd, l_cmd, "%s%s %s'", fun, profile, fasta);
+    cmd[l_cmd - 1] = '\0';
 
+    
     FILE *scan_res = popen(cmd, "r");
     if (scan_res == NULL) {
         fprintf(stderr, "Erreur lors du scan HMM");
@@ -84,10 +118,29 @@ FILE* hmmscan(char *profile, struct String fasta) {
     return scan_res;
 }
 
+/**
+ * @brief Fonction de parsage du fichier table résultat de hmm_scan. La fonction
+ * va récupérer chaque référence de gène présent dans le fichier résultat ainsi
+ * que le profil associé
+ * @param scan_res 
+ * @return Dictionnaire associant une référence de gène et son profil attribué
+ */
 void parse_scan_res(FILE *scan_res) {
     char buffer[512];
     while (fgets(buffer, sizeof(buffer), scan_res) != NULL) {
-        if (buffer[0] != '#') { printf("%s", buffer); }
+        if (buffer[0] != '#') {
+            printf("%s", buffer);
+            char **tokens = split_string(buffer, " ");
+            
+            // int i = 0;
+            char *token;
+            // while (tokens[i] != NULL) {
+            for (int i = 0; i < 19; i++) {
+                token = strdup(tokens[i]);
+                printf("Token n°%i = %s\n", i, token);
+            }
+            // printf("allo\n");
+        }
     }
 }
 
@@ -97,7 +150,8 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    struct String fasta = getFiles(argc - 1, &argv[1]);
+    // struct String fasta = getFiles(argc - 1, &argv[1]);
+    char* fasta = argv[1];
 
     FILE *scan_res = hmmscan("HMM_PROFILE/TAS/TAS_ncbi_nuc.hmm", fasta);
     parse_scan_res(scan_res);
