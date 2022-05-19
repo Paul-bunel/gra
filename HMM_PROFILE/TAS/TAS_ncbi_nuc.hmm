@@ -1,5 +1,5 @@
 HMMER3/f [3.3 | Nov 2019]
-NAME  TAS1R1_msafile_ncbi_nucleotide
+NAME  TAS1R1
 LENG  3757
 MAXL  6903
 ALPH  DNA
@@ -11293,7 +11293,7 @@ HMM          A        C        G        T
           0.03759  3.29980        *  1.46634  0.26236  0.00000        *
 //
 HMMER3/f [3.3 | Nov 2019]
-NAME  TAS1R2_msafile_ncbi_nucleotide
+NAME  TAS1R2
 LENG  5239
 MAXL  25948
 ALPH  DNA
@@ -27033,7 +27033,7 @@ HMM          A        C        G        T
           0.04734  3.07398        *  1.46634  0.26236  0.00000        *
 //
 HMMER3/f [3.3 | Nov 2019]
-NAME  TAS1R3_msafile_ncbi_nucleotide
+NAME  TAS1R3
 LENG  5320
 MAXL  6889
 ALPH  DNA
@@ -43016,7 +43016,7 @@ HMM          A        C        G        T
           0.13514  2.06824        *  3.50343  0.03056  0.00000        *
 //
 HMMER3/f [3.3 | Nov 2019]
-NAME  test
+NAME  TAS2R
 LENG  1193
 MAXL  23709
 ALPH  DNA
