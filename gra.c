@@ -20,17 +20,23 @@ struct String {
     char *str;
 };
 
+typedef struct MapGeneProfile {
+    char *gene;
+    char *profile;
+    char *e_value;
+} MapGeneProfile;
+
 char** split_string(char *str, char *sep) {
     size_t count_tokens = 0;
     int c = 0;
  	for (int i = 0; i < strlen(str) - 1; i++) {
-        if (str[i] >= 33 && str[i] < 127) { c = 1; }
+        if (!c && str[i] >= 33 && str[i] < 127) { c = 1; }
   		if (c && str[i] == sep[0] && str[i + 1] != sep[0] && str[i + 1] != '\0') {
   			count_tokens++;
  		}
 	}
     char **tokens = malloc(++count_tokens * sizeof(char*));
-    printf("Nombre token = %i\n", count_tokens);
+    // printf("Nombre token = %d\n", count_tokens);
 
     char *s = strdup(str);
     char *tok = s, *end = s;
@@ -91,7 +97,19 @@ struct String getFiles(int n, char **filenames) {
     return res;
 }
 
-FILE* hmmscan(char *profile, char *fasta) {
+const size_t count_gene(const char *filename) {
+    FILE *fd = fopen(filename, "r");
+    char buffer[256];
+    size_t n_gene = 0;
+    while (fgets(buffer, sizeof(buffer), fd) != NULL) {
+        if (buffer[0] == '>') { n_gene++; }
+    }
+
+    fclose(fd);
+    return n_gene;
+}
+
+FILE* hmmscan(const char *profile, const char *fasta) {
     /**
         hmmscan -o "/dev/null" \
         --tblout "RESULTS/${name^^}/res_$DBname.txt" \
@@ -125,23 +143,54 @@ FILE* hmmscan(char *profile, char *fasta) {
  * @param scan_res 
  * @return Dictionnaire associant une référence de gène et son profil attribué
  */
-void parse_scan_res(FILE *scan_res) {
+MapGeneProfile* parse_scan_res(FILE *scan_res, const size_t n_gene) {
     char buffer[512];
+    MapGeneProfile *retrievedGenes = malloc(sizeof(MapGeneProfile) * n_gene);
+
+    size_t cpt = 0;
     while (fgets(buffer, sizeof(buffer), scan_res) != NULL) {
         if (buffer[0] != '#') {
-            printf("%s", buffer);
+            printf("Buffer : %s", buffer);
             char **tokens = split_string(buffer, " ");
+            int retrieved = 0;
             
-            // int i = 0;
-            char *token;
-            // while (tokens[i] != NULL) {
-            for (int i = 0; i < 19; i++) {
-                token = strdup(tokens[i]);
-                printf("Token n°%i = %s\n", i, token);
+            for (int i = 0; i < n_gene; i++) {
+                if (retrievedGenes[i].gene != NULL &&
+                    strcmp(retrievedGenes[i].gene, tokens[2]) == 0) {
+                        retrieved = 1;
+                }
             }
-            // printf("allo\n");
+
+            if (!retrieved) {
+                retrievedGenes[cpt++] = (MapGeneProfile) {
+                    .gene = tokens[2],
+                    .profile = tokens[0],
+                    .e_value = tokens[4]
+                };
+            }
         }
     }
+
+    fclose(scan_res);
+    return retrievedGenes;
+}
+
+void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes, size_t n_gene) {
+    FILE *fd = fopen(fasta, "r");
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), fd) != NULL) {
+        if (buffer[0] == '>') {
+            for (int i = 0; i < n_gene; i++) {
+                if (retrievedGenes[i].gene != NULL &&
+                    strstr(buffer, retrievedGenes[i].gene) != NULL) {
+                    printf("gene %s retrouvé sur le header : %s\n", retrievedGenes[i].gene, buffer);
+                    // TODO: Récupérer la séquence et l'écrire dans un nouveau fichier fasta
+                }
+            }
+        }
+    }
+
+    fclose(fd);
 }
 
 int main(int argc, char **argv) {
@@ -151,31 +200,21 @@ int main(int argc, char **argv) {
     }
 
     // struct String fasta = getFiles(argc - 1, &argv[1]);
-    char* fasta = argv[1];
+    const char* fasta = argv[1];
+    const size_t n_gene = count_gene(fasta);
 
     FILE *scan_res = hmmscan("HMM_PROFILE/TAS/TAS_ncbi_nuc.hmm", fasta);
-    parse_scan_res(scan_res);
+    MapGeneProfile *retrievedGenes = parse_scan_res(scan_res, n_gene);
 
-    // printf("Réalisation de la commande bash...\n");
-    // int l_cmd = strlen("/bin/bash -c 'head <<< \"") + fasta.len + 2;
-    // char *cmd = calloc(l_cmd, sizeof(char));
-    // strcpy(cmd, "/bin/bash -c 'head <<< \"");
-    // strcat(cmd, fasta.str);
+    for (int i = 0; i < n_gene; i++) {
+        if (retrievedGenes[i].gene != NULL) {
+            printf("gène n°%d :%s, profile : %s, e_value : %s\n",
+                i, retrievedGenes[i].gene, retrievedGenes[i].profile,
+                retrievedGenes[i].e_value);
+        }
+    }
 
-    // cmd[l_cmd - 3] = '"';
-    // cmd[l_cmd - 2] = '\'';
-    // cmd[l_cmd - 1] = '\0';
-
-    // printf("Commande : \n");
-
-    // for (int i = 10; i >= 1; i--) {
-    //     printf("cmd[l_cmd - %d] = %i\n", i, cmd[l_cmd - i]);
-    // }
-    // int status = system(cmd);
+    fasta_output(fasta, retrievedGenes, n_gene);
 
     return EXIT_SUCCESS;
 }
-
-// caca\0 -> 4
-// '"caca"'\0
-
