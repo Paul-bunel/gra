@@ -20,13 +20,18 @@ struct String {
     char *str;
 };
 
+typedef struct Tokens {
+    size_t size;
+    char **tokens;
+} Tokens;
+
 typedef struct MapGeneProfile {
     char *gene;
     char *profile;
     char *e_value;
 } MapGeneProfile;
 
-char** split_string(char *str, char *sep) {
+Tokens split_string(const char *str, char *sep) {
     size_t count_tokens = 0;
     int c = 0;
  	for (int i = 0; i < strlen(str) - 1; i++) {
@@ -36,7 +41,6 @@ char** split_string(char *str, char *sep) {
  		}
 	}
     char **tokens = malloc(++count_tokens * sizeof(char*));
-    // printf("Nombre token = %d\n", count_tokens);
 
     char *s = strdup(str);
     char *tok = s, *end = s;
@@ -50,13 +54,9 @@ char** split_string(char *str, char *sep) {
         tok = end;
     }
 
-    // for (int i = 0; i < count_tokens; i++) {
-    //     printf("tokens n°%i : %s\n", i, tokens[i]);
-    // }
+    Tokens t = (Tokens) { .size = count_tokens, .tokens = tokens };
 
-    free(s);
-
-    return tokens;
+    return t;
 }
 
 struct String getFiles(int n, char **filenames) {
@@ -133,6 +133,7 @@ FILE* hmmscan(const char *profile, const char *fasta) {
         fprintf(stderr, "Erreur lors du scan HMM");
     }
 
+    free(cmd);
     return scan_res;
 }
 
@@ -150,24 +151,24 @@ MapGeneProfile* parse_scan_res(FILE *scan_res, const size_t n_gene) {
     size_t cpt = 0;
     while (fgets(buffer, sizeof(buffer), scan_res) != NULL) {
         if (buffer[0] != '#') {
-            printf("Buffer : %s", buffer);
-            char **tokens = split_string(buffer, " ");
+            Tokens tokens = split_string(buffer, " ");
             int retrieved = 0;
             
             for (int i = 0; i < n_gene; i++) {
                 if (retrievedGenes[i].gene != NULL &&
-                    strcmp(retrievedGenes[i].gene, tokens[2]) == 0) {
+                    strcmp(retrievedGenes[i].gene, tokens.tokens[2]) == 0) {
                         retrieved = 1;
                 }
             }
 
             if (!retrieved) {
                 retrievedGenes[cpt++] = (MapGeneProfile) {
-                    .gene = tokens[2],
-                    .profile = tokens[0],
-                    .e_value = tokens[4]
+                    .gene = tokens.tokens[2],
+                    .profile = tokens.tokens[0],
+                    .e_value = tokens.tokens[4]
                 };
             }
+            free(tokens.tokens);
         }
     }
 
@@ -175,22 +176,66 @@ MapGeneProfile* parse_scan_res(FILE *scan_res, const size_t n_gene) {
     return retrievedGenes;
 }
 
+char* get_filename(const char* filename) {
+    Tokens tokens = split_string(filename, "/");
+    int i;
+    Tokens raw_filename = split_string(tokens.tokens[tokens.size - 1], ".");
+
+    free(tokens.tokens);
+    return raw_filename.tokens[0];
+}
+
+/**
+ * @brief fonction écrivant dans un nouveau fichier fasta les gènes reconnus
+ * par les profils HMM, annoté avec le nom du profil l'ayant reconnu.
+ * @param fasta le fichier fasta d'entrée contenant tous les gènes à tester
+ * @param retrievedGenes les gènes reconnus
+ * @param n_gene le nombre de gènes dans le fichier fasta d'entrée
+ */
 void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes, size_t n_gene) {
-    FILE *fd = fopen(fasta, "r");
+    FILE *fa_in = fopen(fasta, "r");
+
+    char *fasta_truncated = get_filename(fasta);
+    size_t l_fa_out_name = strlen(fasta_truncated) + strlen("_GRA_OUTPUT.fasta") + 1;
+    char *fa_out_name = calloc(l_fa_out_name, sizeof(char));
+    snprintf(fa_out_name, l_fa_out_name, "%s_GRA_OUTPUT.fasta", fasta_truncated);
+    FILE *fa_out = fopen(fa_out_name, "w");
+
+    char seq[32768]; seq[0] = '\0';
     char buffer[256];
-    while (fgets(buffer, sizeof(buffer), fd) != NULL) {
+    int read = 0;
+    while (fgets(buffer, sizeof(buffer), fa_in) != NULL) {
         if (buffer[0] == '>') {
+            fprintf(fa_out, "%s", seq);
+            memset(seq, 0, sizeof(seq));
+            read = 0;
             for (int i = 0; i < n_gene; i++) {
                 if (retrievedGenes[i].gene != NULL &&
                     strstr(buffer, retrievedGenes[i].gene) != NULL) {
-                    printf("gene %s retrouvé sur le header : %s\n", retrievedGenes[i].gene, buffer);
-                    // TODO: Récupérer la séquence et l'écrire dans un nouveau fichier fasta
+                    read = 1;
+                    
+                    int j = 0;
+                    while (buffer[j] != '\n') {
+                        j++;
+                    }
+                    if (buffer[j-1] == '\r') { j--; }
+                    buffer[j] = '|';
+                    buffer[j+1] = '\0';
+                    strcat(buffer, retrievedGenes[i].profile);
+                    strcat(buffer, "|\0");
+                    strcat(buffer, retrievedGenes[i].e_value);
+                    strcat(buffer, "\n\0");
+
+                    strcat(seq, buffer);
                 }
             }
-        }
+        } else if (read) { strcat(seq, buffer); }
     }
-
-    fclose(fd);
+    fprintf(fa_out, "%s", seq);
+    free(fa_out_name);
+    free(retrievedGenes);
+    fclose(fa_in);
+    fclose(fa_out);
 }
 
 int main(int argc, char **argv) {
@@ -199,20 +244,18 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    // struct String fasta = getFiles(argc - 1, &argv[1]);
     const char* fasta = argv[1];
     const size_t n_gene = count_gene(fasta);
+    printf("nombre de gène dans le fichier d'entrée : %lu\n", n_gene);
 
     FILE *scan_res = hmmscan("HMM_PROFILE/TAS/TAS_ncbi_nuc.hmm", fasta);
     MapGeneProfile *retrievedGenes = parse_scan_res(scan_res, n_gene);
 
+    size_t n_retrieved_genes = 0;
     for (int i = 0; i < n_gene; i++) {
-        if (retrievedGenes[i].gene != NULL) {
-            printf("gène n°%d :%s, profile : %s, e_value : %s\n",
-                i, retrievedGenes[i].gene, retrievedGenes[i].profile,
-                retrievedGenes[i].e_value);
-        }
+        if (retrievedGenes[i].gene != NULL) { n_retrieved_genes++; }
     }
+    printf("nombre de gène reconnus : %lu\n", n_retrieved_genes);
 
     fasta_output(fasta, retrievedGenes, n_gene);
 
