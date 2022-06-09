@@ -1,4 +1,6 @@
 #!/bin/bash
+# utilisation : ./make_profil.sh <msafile_TAS.fasta>
+# sortie : HMM_PROFILE/TAS/TASx/<TASx.hmm>
 SRC=$1
 
 name=$(sed 's|.*/||' <<< $SRC | sed 's/msafile_//' | sed 's/\..*//')
@@ -13,8 +15,8 @@ TAS=''
     printf "Creating directory 'HMM_PROFILE$TAS/${gene^^}'\n\n"
 
 printf "Building HMM profile...\n"
-printf "hmmbuild -o \"/dev/null\" --dna \"HMM_PROFILE$TAS/${gene^^}/$name.hmm\" $SRC\n\n"
-hmmbuild -o "/dev/null" --dna "HMM_PROFILE$TAS/${gene^^}/$name.hmm" $SRC
+printf "hmmbuild -n $gene -o \"/dev/null\" --dna \"HMM_PROFILE$TAS/${gene^^}/$name.hmm\" $SRC\n\n"
+hmmbuild -n $gene -o "/dev/null" --dna "HMM_PROFILE$TAS/${gene^^}/$name.hmm" $SRC
 
 printf "Converting to binaries files\n"
 printf "hmmpress -f \"HMM_PROFILE$TAS/${gene^^}/$name.hmm\" > /dev/null\n"

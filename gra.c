@@ -119,6 +119,7 @@ FILE* hmmscan(const char *profile, const char *fasta) {
      */
     char *fun = "/bin/bash -c '"
         "hmmscan -o /dev/null "
+        "-E 0.9e-45 "
         "--tblout /dev/stdout "
         "--qformat fasta ";
 
@@ -239,16 +240,17 @@ void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes, size_t n_ge
 }
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        fprintf(stderr, "Utilisation : %s fichier1.fasta fichier2.fasta ...\n", argv[0]);
+    if (argc < 3) {
+        fprintf(stderr, "Utilisation : %s <fichier.fasta> <fichier.hmm> ...\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
     const char* fasta = argv[1];
+    const char* hmm = argv[2];
     const size_t n_gene = count_gene(fasta);
     printf("nombre de gène dans le fichier d'entrée : %lu\n", n_gene);
 
-    FILE *scan_res = hmmscan("HMM_PROFILE/TAS/TAS_ncbi_nuc.hmm", fasta);
+    FILE *scan_res = hmmscan(hmm, fasta);
     MapGeneProfile *retrievedGenes = parse_scan_res(scan_res, n_gene);
 
     size_t n_retrieved_genes = 0;

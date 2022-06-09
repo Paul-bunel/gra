@@ -1,0 +1,106 @@
+TAS2R Train set query :
+    TAS2R*[Title] NOT PREDICTED[Title] NOT pseudogene[Title] AND Mammalia[Organism]
+    + Refseq filter + mRNA filter
+    -> 136 results
+    clone 7 artiodactyls results ? No : not cetaceans
+
+TAS2R Test set query RefSeq Predicted Pseudo:
+    (TAS2R*[Title] NOT partial[Title] NOT clone[Title] AND
+    (predicted[Title] OR pseudogene[Title]) AND Mammalia[Organism]) AND
+    "even-toed ungulates"[porgn:__txid91561]
+    + RefSeq filter + Animals filter
+    -> 233 artiodactyls, 61 cetaceans
+
+TAS2R Test set query INSDC clean:
+    TAS2R*[Title] AND complete[Title] NOT partial[Title] NOT similar[Title] NOT
+    pseudogene[Title] NOT PREDICTED[Title] NOT clone[Title] AND Mammalia[Organism]
+    + INSDC filter
+    -> 3433 results (à filtrer)
+
+TAS1R1 Train set query :
+    TAS1R1[Title] NOT partial[Title] NOT pseudogene[Title]
+        NOT PREDICTED[Title] AND Mammalia[Organism] 
+    -> 35 results
+    1 cetacean
+
+TAS1R1 Test set query RefSeq Predicted Pseudo:
+    TAS1R1[Title] NOT partial[Title] NOT clone[Title] AND
+    (PREDICTED[Title] OR pseudogene[Title]) AND Mammalia[Organism]
+    + Refseq filter
+    -> 213 results
+    33 artiodactyls -> 11 cetaceans
+
+TAS1R1 Test set query INSDC clean:
+    TAS1R1[Title] AND complete[Title] NOT partial[Title] NOT similar[Title] NOT
+    pseudogene[Title] NOT PREDICTED[Title] NOT clone[Title] AND Mammalia[Organism]
+    + INSDC filter
+    -> 27 results
+    1 artiodactyls, not cetacean
+
+TAS1R2 Train set query :
+    TAS1R2[Title] NOT partial[Title] NOT pseudogene[Title]
+        NOT PREDICTED[Title] AND Mammalia[Organism] 
+    + Animals filter
+    -> 43 results
+    3 artiodactyls, not ceteceans
+
+TAS1R2 Test set query RefSeq Predicted Pseudo :
+    TAS1R2[Title] NOT partial[Title] NOT clone[Title] AND
+    (PREDICTED[Title] OR pseudogene[Title]) AND Mammalia[Organism] 
+    + Refseq filter
+    -> 188 results
+    25 artiodactyls, 11 cetaceans
+
+TAS1R2 Test set query INSDC clean:
+    TAS1R1[Title] AND complete[Title] NOT partial[Title] NOT similar[Title] NOT
+    pseudogene[Title] NOT PREDICTED[Title] NOT clone[Title] AND Mammalia[Organism]
+    + INSDC filter
+    -> 35 results
+    1 artiodactyls, not cetacean
+
+TAS1R3 Train set query :
+    TAS1R3[Title] NOT partial[Title] NOT pseudogene[Title]
+        NOT PREDICTED[Title] AND Mammalia[Organism] 
+    + Animals filter
+    -> 55 results
+    2 artiodactyls, not cetaceans
+
+TAS1R3 Test set query RefSeq Predicted Pseudo :
+    TAS1R3[Title] NOT partial[Title] NOT clone[Title] AND
+    (PREDICTED[Title] OR pseudogene[Title]) AND Mammalia[Organism]
+    + Refseq filter
+    -> 218 results
+    27 artiodactyls, 11 cetaceans
+
+TAS1R3 Test set query INSDC clean:
+    TAS1R1[Title] AND complete[Title] NOT partial[Title] NOT similar[Title] NOT
+    pseudogene[Title] NOT PREDICTED[Title] NOT clone[Title] AND Mammalia[Organism]
+    + INSDC filter
+    -> 47 results
+    1 artiodactyls, not cetacean
+
+Vomeronasal Mammalia RefSeq :
+    vomeronasal[Title] NOT PREDICTED[Title] NOT pseudogene[Title] NOT
+    clone[Title] NOT partial[Title] AND Mammalia[Organism]
+    + RefSeq filter + mRNA filter
+    -> 1226 results, 2 artiodactyls, not cetaceans
+
+Megaptera Novaeangliae genes :
+    txid9773[porgn] NOT TAS1R*[Title] NOT TAS2R[Title] NOT mitochondrion[Title]
+    NOT mitochondrial[Title] NOT clone[Title] NOT similar[Title]
+    NOT partial[Title] NOT virus[Title]
+    -> 349 seqs
+
+Tursiop Truncatus genes :
+    (txid9739[Organism:noexp] AND txid9739[porgn]) NOT TAS1R*[Title] NOT
+    TAS2R[Title] NOT mitochondrion[Title] NOT mitochondrial[Title] NOT
+    clone[Title] NOT similar[Title] NOT partial[Title] NOT virus[Title] 
+    + RefSeq filter + mRNA filter + 700-6000 length + date > 2018
+    -> 45170 seqs, took 400 first (default sort)
+
+Globicephala Melas genes :
+    (txid9731[Organism:noexp] AND txid9731[porgn]) NOT TAS1R*[Title] NOT
+    TAS2R[Title] NOT mitochondrion[Title] NOT mitochondrial[Title] NOT clone
+    NOT similar NOT partial[Title] NOT virus[Title] NOT PREDICTED[Title] 
+    + RefSeq filter + 700-6000 length + date > 2018
+    -> 4419 seqs, took 400 first (default sort)
