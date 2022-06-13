@@ -25,6 +25,7 @@ def stats_results(res_file, *in_files):
     gene_res = {}
     fp = 0
     fn = 0
+    tp = tn = 0
     for record in SeqIO.parse(res_file, "fasta"):
         accession = record.id
         profile, evalue = record.description.split('|')[-2:]
@@ -35,31 +36,37 @@ def stats_results(res_file, *in_files):
     # [print(f"{key :<30}: {value}") for key, value in gene_res.items()]        
 
     for file in in_files:
+        profile = re.search("TAS[12]R[123]*", file)
+        if profile:
+            profile = profile[0]
         for record in SeqIO.parse(file, "fasta"):
             accession = record.id
-            profile = re.search("TAS[12]R[123]*", file)
             if profile:
-                profile = profile[0]
                 if accession in gene_res:# and float(gene_res[accession][1]) < 0.9e-45:
                     if gene_res[accession][0] != profile:
-                        print("%s de profil %s a été reconnu au mauvais profil : %s",
-                            (accession, gene_res[accession], profile))
+                        print("%s de profil %s a été reconnu au mauvais profil : %s" %
+                            (accession, profile, gene_res[accession]))
                         fn += 1
+                    else:
+                        tp += 1
                 else:
                     print("%s de profil %s n'a pas été reconnu" % (accession, profile))
                     fn += 1
             else:
                 if accession in gene_res:# and float(gene_res[accession][1]) < 0.9e-45:
-                    # print(record.description)
-                    print("Le gene", accession, ",ne devant pas être reconnu, à",
-                        "été identifié au profil", gene_res[accession], "par erreur")
+                    print(record.description, gene_res[accession])
+                    # print("Le gene", accession, ",ne devant pas être reconnu, à",
+                        # "été identifié au profil", gene_res[accession], "par erreur")
                     fp += 1
+                else:
+                    tn += 1
 
-    print("Nombre de faux positifs : %s, nombre de faux négatifs : %s" % (fp, fn))
+    print("Nombre de faux positifs : %s, nombre de faux négatifs : %s" % (fp, fn),
+          "Nombre de vrais positifs : %s, nombre de vrais négatifs : %s" % (tp, tn))
 
 
 
-with open("TAS_BIG_TEST_GRA_OUTPUT.fasta") as file:
+with open(sys.argv[1]) as file:
     stats_results(
         file,
         "SEQUENCES/TEST/TAS1R1_RefSeq_Predicted_Pseudo.fasta",
@@ -70,7 +77,8 @@ with open("TAS_BIG_TEST_GRA_OUTPUT.fasta") as file:
         "SEQUENCES/TEST/TAS1R2_INSDC_clean.fasta",
         "SEQUENCES/TEST/TAS1R3_INSDC_clean.fasta",
         "SEQUENCES/TEST/TAS2R_INSDC_clean.fasta",
-        "SEQUENCES/TEST/Vomeronasal_RefSeq_Mammalia.fasta" ,
+        "SEQUENCES/TEST/Vomeronasal_RefSeq_Mammalia.fasta",
+        "SEQUENCES/TEST/OR_cetaceans.fasta",
         "SEQUENCES/TEST/Megaptera_novaeangliae_seqs_nTAS.fasta",
         "SEQUENCES/TEST/Tursiop_truncatus_seqs_nTAS.fasta",
         "SEQUENCES/TEST/Globicephala_melas_seqs_nTAS.fasta"

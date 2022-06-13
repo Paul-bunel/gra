@@ -109,7 +109,7 @@ const size_t count_gene(const char *filename) {
     return n_gene;
 }
 
-FILE* hmmscan(const char *profile, const char *fasta) {
+FILE* hmmscan(const char *fasta, const char *profile, const char* e_value) {
     /**
         hmmscan -o "/dev/null" \
         --tblout "RESULTS/${name^^}/res_$DBname.txt" \
@@ -119,15 +119,16 @@ FILE* hmmscan(const char *profile, const char *fasta) {
      */
     char *fun = "/bin/bash -c '"
         "hmmscan -o /dev/null "
-        "-E 0.9e-45 "
         "--tblout /dev/stdout "
-        "--qformat fasta ";
+        "--qformat fasta "
+        "-E ";
 
-    size_t l_cmd = strlen(fun) + strlen(profile) + strlen(fasta) + 3;
+    size_t l_cmd = strlen(fun) + strlen(e_value) + strlen(profile) + strlen(fasta) + 4;
     char *cmd = calloc(l_cmd, sizeof(char));
-    snprintf(cmd, l_cmd, "%s%s %s'", fun, profile, fasta);
+    snprintf(cmd, l_cmd, "%s%s %s %s'", fun, e_value, profile, fasta);
     cmd[l_cmd - 1] = '\0';
 
+    printf("Command :\n%s\n", cmd);
     
     FILE *scan_res = popen(cmd, "r");
     if (scan_res == NULL) {
@@ -186,6 +187,15 @@ char* get_filename(const char* filename) {
     return raw_filename.tokens[0];
 }
 
+char* default_output_name(const char* fasta) {
+    char *fasta_truncated = get_filename(fasta);
+    size_t l_fa_out_name = strlen(fasta_truncated) + strlen("_GRA_OUTPUT.fasta") + 1;
+    char *fa_out_name = calloc(l_fa_out_name, sizeof(char));
+    snprintf(fa_out_name, l_fa_out_name, "%s_GRA_OUTPUT.fasta", fasta_truncated);
+
+    return fa_out_name;
+}
+
 /**
  * @brief fonction écrivant dans un nouveau fichier fasta les gènes reconnus
  * par les profils HMM, annoté avec le nom du profil l'ayant reconnu.
@@ -193,13 +203,10 @@ char* get_filename(const char* filename) {
  * @param retrievedGenes les gènes reconnus
  * @param n_gene le nombre de gènes dans le fichier fasta d'entrée
  */
-void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes, size_t n_gene) {
+void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes,
+                                    size_t n_gene, char* fa_out_name) {
     FILE *fa_in = fopen(fasta, "r");
 
-    char *fasta_truncated = get_filename(fasta);
-    size_t l_fa_out_name = strlen(fasta_truncated) + strlen("_GRA_OUTPUT.fasta") + 1;
-    char *fa_out_name = calloc(l_fa_out_name, sizeof(char));
-    snprintf(fa_out_name, l_fa_out_name, "%s_GRA_OUTPUT.fasta", fasta_truncated);
     FILE *fa_out = fopen(fa_out_name, "w");
 
     char seq[32768]; seq[0] = '\0';
@@ -233,24 +240,46 @@ void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes, size_t n_ge
         } else if (read) { strcat(seq, buffer); }
     }
     fprintf(fa_out, "%s", seq);
-    free(fa_out_name);
     free(retrievedGenes);
     fclose(fa_in);
     fclose(fa_out);
 }
 
+const char** get_parameters(int argc, char ** argv) {
+    if (argc == 2) {
+        return (const char*[]){
+            "HMM_PROFILE/TAS/TAS_ncbi.hmm",
+            "0.9e-45",
+            default_output_name(argv[1])
+        };
+    }
+    if (argc == 3) {
+        return (const char*[]){argv[2], "0.9e-45", default_output_name(argv[1])};
+    }
+    if (argc == 4) {
+        return (const char*[]){argv[2], argv[3], default_output_name(argv[1])};
+    }
+    if (argc == 5) {
+        return (const char*[]){argv[2], argv[3], argv[4]};
+    }
+}
+
 int main(int argc, char **argv) {
-    if (argc < 3) {
-        fprintf(stderr, "Utilisation : %s <fichier.fasta> <fichier.hmm> ...\n", argv[0]);
+    if (argc < 2 || argc > 5) {
+        fprintf(stderr, "Incorrect number of command line arguments\n"
+        "Usage : %s <seqfile.fasta> [hmmdb] [E_value threshold] [output_name]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-
     const char* fasta = argv[1];
-    const char* hmm = argv[2];
+    const char **params = get_parameters(argc, argv);
+    const char *hmm = params[0];
+    const char *e_value = params[1];
+    char *fa_out = params[2];
+
     const size_t n_gene = count_gene(fasta);
     printf("nombre de gène dans le fichier d'entrée : %lu\n", n_gene);
 
-    FILE *scan_res = hmmscan(hmm, fasta);
+    FILE *scan_res = hmmscan(fasta, hmm, e_value);
     MapGeneProfile *retrievedGenes = parse_scan_res(scan_res, n_gene);
 
     size_t n_retrieved_genes = 0;
@@ -259,7 +288,9 @@ int main(int argc, char **argv) {
     }
     printf("nombre de gène reconnus : %lu\n", n_retrieved_genes);
 
-    fasta_output(fasta, retrievedGenes, n_gene);
+    fasta_output(fasta, retrievedGenes, n_gene, fa_out);
+
+    if (argc != 5) { free(fa_out); }
 
     return EXIT_SUCCESS;
 }
