@@ -109,7 +109,8 @@ const size_t count_gene(const char *filename) {
     return n_gene;
 }
 
-FILE* hmmscan(const char *fasta, const char *profile, const char* e_value) {
+FILE* hmmscan(const char *fasta, const char *profile, const char *e_value,
+                                                           const char *cpu) {
     /**
         hmmscan -o "/dev/null" \
         --tblout "RESULTS/${name^^}/res_$DBname.txt" \
@@ -123,9 +124,10 @@ FILE* hmmscan(const char *fasta, const char *profile, const char* e_value) {
         "--qformat fasta "
         "-E ";
 
-    size_t l_cmd = strlen(fun) + strlen(e_value) + strlen(profile) + strlen(fasta) + 4;
+    size_t l_cmd = strlen(fun) + strlen(e_value) + strlen(cpu) +
+        strlen(profile) + strlen(fasta) + 11;
     char *cmd = calloc(l_cmd, sizeof(char));
-    snprintf(cmd, l_cmd, "%s%s %s %s'", fun, e_value, profile, fasta);
+    snprintf(cmd, l_cmd, "%s%s --cpu %s %s %s'", fun, e_value, cpu, profile, fasta);
     cmd[l_cmd - 1] = '\0';
 
     printf("Command :\n%s\n", cmd);
@@ -148,19 +150,23 @@ FILE* hmmscan(const char *fasta, const char *profile, const char* e_value) {
  */
 MapGeneProfile* parse_scan_res(FILE *scan_res, const size_t n_gene) {
     char buffer[512];
+    fflush(stdout);
+    
     MapGeneProfile *retrievedGenes = malloc(sizeof(MapGeneProfile) * n_gene);
 
     size_t cpt = 0;
+
     while (fgets(buffer, sizeof(buffer), scan_res) != NULL) {
         if (buffer[0] != '#') {
             Tokens tokens = split_string(buffer, " ");
             int retrieved = 0;
             
             for (int i = 0; i < n_gene; i++) {
-                if (retrievedGenes[i].gene != NULL &&
-                    strcmp(retrievedGenes[i].gene, tokens.tokens[2]) == 0) {
+                if (retrievedGenes[i].gene != NULL) {
+                    if (strcmp(retrievedGenes[i].gene, tokens.tokens[2]) == 0) {
                         retrieved = 1;
-                }
+                    }
+                } else break;
             }
 
             if (!retrieved) {
@@ -170,11 +176,12 @@ MapGeneProfile* parse_scan_res(FILE *scan_res, const size_t n_gene) {
                     .e_value = tokens.tokens[4]
                 };
             }
+
             free(tokens.tokens);
         }
     }
-
     fclose(scan_res);
+
     return retrievedGenes;
 }
 
@@ -212,85 +219,178 @@ void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes,
     char seq[32768]; seq[0] = '\0';
     char buffer[256];
     int read = 0;
+    int lol = 0;
     while (fgets(buffer, sizeof(buffer), fa_in) != NULL) {
         if (buffer[0] == '>') {
             fprintf(fa_out, "%s", seq);
             memset(seq, 0, sizeof(seq));
             read = 0;
             for (int i = 0; i < n_gene; i++) {
-                if (retrievedGenes[i].gene != NULL &&
-                    strstr(buffer, retrievedGenes[i].gene) != NULL) {
-                    read = 1;
-                    
-                    int j = 0;
-                    while (buffer[j] != '\n') {
-                        j++;
-                    }
-                    if (buffer[j-1] == '\r') { j--; }
-                    buffer[j] = '|';
-                    buffer[j+1] = '\0';
-                    strcat(buffer, retrievedGenes[i].profile);
-                    strcat(buffer, "|\0");
-                    strcat(buffer, retrievedGenes[i].e_value);
-                    strcat(buffer, "\n\0");
+                if (retrievedGenes[i].gene != NULL) {
+                    if (strstr(buffer, retrievedGenes[i].gene) != NULL) {
+                        lol++;
+                        read = 1;
+                        
+                        int j = 0;
+                        while (buffer[j] != '\n') {
+                            j++;
+                        }
+                        if (buffer[j-1] == '\r') { j--; }
+                        buffer[j] = '|';
+                        buffer[j+1] = '\0';
+                        strcat(buffer, retrievedGenes[i].profile);
+                        strcat(buffer, "|\0");
+                        strcat(buffer, retrievedGenes[i].e_value);
+                        strcat(buffer, "\n\0");
 
-                    strcat(seq, buffer);
-                }
+                        strcat(seq, buffer);
+                    }
+                } else break;
             }
         } else if (read) { strcat(seq, buffer); }
     }
+    printf("Nombre de gènes écrits : %i\n", lol);
     fprintf(fa_out, "%s", seq);
-    free(retrievedGenes);
     fclose(fa_in);
     fclose(fa_out);
 }
 
-const char** get_parameters(int argc, char ** argv) {
-    if (argc == 2) {
-        return (const char*[]){
-            "HMM_PROFILE/TAS/TAS_ncbi.hmm",
-            "0.9e-45",
-            default_output_name(argv[1])
-        };
+const char** get_parameters(int argc, char ** argv, size_t *j) {
+    /**
+     * @brief Parse les arguments entrés en ligne de commande afin de récupérer
+     * les différents paramètres du programme
+     * ./gra <seqfile>
+     * -h help
+     * -p hmm profile
+     * -e e_value threshold
+     * -o output file
+     * -c number of thread 
+     */
+    const char *hmm = "HMM_PROFILE/TAS/TAS_ncbi.hmm";
+    const char *e_value = "0.9e-45";
+    const char *fa_out = default_output_name(argv[argc-1]);
+    const char *cpu = "2";
+    *j = 1;
+    for (int i = 1; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            // printf("Parsing argument : %s\n", argv[i]);
+            switch (argv[i][1]) {
+                case 104:
+                    fprintf(stderr,
+                        "=====   GRA   =====\n\n"
+                        "Usage: gra [-options] <seqfile>\n\n"
+                        "%-12s: list options.\n"
+                        "%-12s: scan <seqfile> against <hmmdb>.\n"
+                        "%-12s: set <x> as the E-value threshold. GRA will "
+                            "only report sequences with an E-value <= <x>.\n"
+                            "%-14sDefaults is 0.9e-45.\n"
+                        "%-12s: redirect output to the file <f>.\n%-14sDefault "
+                            "is \"<seqfile>_GRA_OUTPUT.fasta\".\n%-14sIf there "
+                            "are multiple fasta as input, default is used for "
+                            "each.\n"
+                        "%-12s: Set the number of parallel worker threads to"
+                            " <n>. On multicore machines, the default is 2.\n",
+                        "-h", "-p <hmmdb>", "-e <x>", "", "-o <f>", "", "", "-c <n>"
+                    );
+                    exit(EXIT_SUCCESS);
+                    break;
+                case 112:
+                    hmm = argv[++i];
+                    // printf("HMM profile : %s\n", hmm);
+                    break;
+                case 101:
+                    e_value = argv[++i];
+                    // printf("E-value threshold : %s\n", e_value);
+                    break;
+                case 111:
+                    fa_out = argv[++i];
+                    // printf("Output file : %s\n", fa_out);
+                    break;
+                case 99:
+                    cpu = argv[++i];
+                    // printf("Number of thread : %s\n", cpu);
+                    break;
+                default:
+                    printf("Unknown option \"%s %s\", type gra -h to see options.\n",
+                        argv[i], argv[i+1]);
+                    exit(EXIT_FAILURE);
+                    break;
+            }
+            *j = i + 1;
+        } else { }
     }
-    if (argc == 3) {
-        return (const char*[]){argv[2], "0.9e-45", default_output_name(argv[1])};
-    }
-    if (argc == 4) {
-        return (const char*[]){argv[2], argv[3], default_output_name(argv[1])};
-    }
-    if (argc == 5) {
-        return (const char*[]){argv[2], argv[3], argv[4]};
-    }
+
+    return (const char*[]){hmm, e_value, fa_out, cpu};
 }
 
-int main(int argc, char **argv) {
-    if (argc < 2 || argc > 5) {
-        fprintf(stderr, "Incorrect number of command line arguments\n"
-        "Usage : %s <seqfile.fasta> [hmmdb] [E_value threshold] [output_name]\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
-    const char* fasta = argv[1];
-    const char **params = get_parameters(argc, argv);
-    const char *hmm = params[0];
-    const char *e_value = params[1];
-    char *fa_out = params[2];
+void run_gra(
+    const char *fasta,
+    const char *hmm,
+    const char *e_value,
+    char *fa_out,
+    const char*cpu
+) {
+    printf("Args :\nfasta : %s\nhmm : %s\ne_value : %s\nfa_out : %s\ncpu : %s\n",
+        fasta, hmm, e_value, fa_out, cpu);
 
     const size_t n_gene = count_gene(fasta);
     printf("nombre de gène dans le fichier d'entrée : %lu\n", n_gene);
 
-    FILE *scan_res = hmmscan(fasta, hmm, e_value);
-    MapGeneProfile *retrievedGenes = parse_scan_res(scan_res, n_gene);
+    FILE *scan_res = hmmscan(fasta, hmm, e_value, cpu);
+    printf("Fin hmmscan\n");
+    // FILE *f = fopen("vrac/aug_test.txt", "r");
+    MapGeneProfile *retrievedGenes = malloc(sizeof(MapGeneProfile) * n_gene);
+    retrievedGenes = parse_scan_res(scan_res, n_gene);
+    printf("Fin parsage\n");
 
     size_t n_retrieved_genes = 0;
     for (int i = 0; i < n_gene; i++) {
         if (retrievedGenes[i].gene != NULL) { n_retrieved_genes++; }
+        else break;
     }
     printf("nombre de gène reconnus : %lu\n", n_retrieved_genes);
 
     fasta_output(fasta, retrievedGenes, n_gene, fa_out);
+    for (int i = 0; i < n_gene; i++) {
+        if (retrievedGenes[i].gene != NULL) {
+            free(retrievedGenes[i].gene);
+            free(retrievedGenes[i].profile);
+            free(retrievedGenes[i].e_value);
+        }   
+    }
+    free(retrievedGenes);
+    retrievedGenes = NULL;
+    // memset(retrievedGenes, 0, n_gene);
+}
 
-    if (argc != 5) { free(fa_out); }
+int main(int argc, char **argv) {
+    if (argc < 2 || argv[argc-2][0] == '-' ||
+        (argv[argc-1][0] == '-' && argv[argc-1][1] != 'h')) {
+        fprintf(stderr, "Incorrect number of command line arguments.\n"
+        "Usage: gra [-options] <seqfiles>\nType gra -h to see options.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    size_t j;
+    const char **params = get_parameters(argc, argv, &j);
+    const char *hmm = params[0];
+    const char *e_value = params[1];
+    char *fa_out = params[2];
+    const char *cpu = params[3];
+    char** seqfiles = &argv[j];
+
+    for (int i = 0; i < argc - j; i++) {
+        if (argc - j > 1) { fa_out = default_output_name(seqfiles[i]); }
+        run_gra(seqfiles[i], hmm, e_value, fa_out, cpu);
+    }
+
+    int free_fa_out = 1;
+    for (int i = 1; i < argc; i++) {
+        if (argv[i][0] == '-' && argv[i][1] == 'o') {
+            free_fa_out = 0;
+        }
+    }
+    if (free_fa_out) { free(fa_out); }
 
     return EXIT_SUCCESS;
 }
