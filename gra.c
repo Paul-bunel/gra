@@ -148,25 +148,23 @@ FILE* hmmscan(const char *fasta, const char *profile, const char *e_value,
  * @param scan_res 
  * @return Dictionnaire associant une référence de gène et son profil attribué
  */
-MapGeneProfile* parse_scan_res(FILE *scan_res, const size_t n_gene) {
+size_t parse_scan_res(
+    FILE *scan_res,
+    const size_t n_gene,
+    MapGeneProfile *retrievedGenes
+) {
     char buffer[512];
-    fflush(stdout);
-    
-    MapGeneProfile *retrievedGenes = malloc(sizeof(MapGeneProfile) * n_gene);
-
     size_t cpt = 0;
 
     while (fgets(buffer, sizeof(buffer), scan_res) != NULL) {
         if (buffer[0] != '#') {
             Tokens tokens = split_string(buffer, " ");
             int retrieved = 0;
-            
-            for (int i = 0; i < n_gene; i++) {
-                if (retrievedGenes[i].gene != NULL) {
-                    if (strcmp(retrievedGenes[i].gene, tokens.tokens[2]) == 0) {
-                        retrieved = 1;
-                    }
-                } else break;
+
+            for (int i = 0; i < cpt; i++) {
+                if (strcmp(retrievedGenes[i].gene, tokens.tokens[2]) == 0) {
+                    retrieved = 1;
+                }
             }
 
             if (!retrieved) {
@@ -182,7 +180,7 @@ MapGeneProfile* parse_scan_res(FILE *scan_res, const size_t n_gene) {
     }
     fclose(scan_res);
 
-    return retrievedGenes;
+    return cpt;
 }
 
 char* get_filename(const char* filename) {
@@ -211,7 +209,7 @@ char* default_output_name(const char* fasta) {
  * @param n_gene le nombre de gènes dans le fichier fasta d'entrée
  */
 void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes,
-                                    size_t n_gene, char* fa_out_name) {
+                                    size_t n_retrieved_genes, char* fa_out_name) {
     FILE *fa_in = fopen(fasta, "r");
 
     FILE *fa_out = fopen(fa_out_name, "w");
@@ -225,27 +223,25 @@ void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes,
             fprintf(fa_out, "%s", seq);
             memset(seq, 0, sizeof(seq));
             read = 0;
-            for (int i = 0; i < n_gene; i++) {
-                if (retrievedGenes[i].gene != NULL) {
-                    if (strstr(buffer, retrievedGenes[i].gene) != NULL) {
-                        lol++;
-                        read = 1;
-                        
-                        int j = 0;
-                        while (buffer[j] != '\n') {
-                            j++;
-                        }
-                        if (buffer[j-1] == '\r') { j--; }
-                        buffer[j] = '|';
-                        buffer[j+1] = '\0';
-                        strcat(buffer, retrievedGenes[i].profile);
-                        strcat(buffer, "|\0");
-                        strcat(buffer, retrievedGenes[i].e_value);
-                        strcat(buffer, "\n\0");
-
-                        strcat(seq, buffer);
+            for (int i = 0; i < n_retrieved_genes; i++) {
+                if (strstr(buffer, retrievedGenes[i].gene) != NULL) {
+                    lol++;
+                    read = 1;
+                    
+                    int j = 0;
+                    while (buffer[j] != '\n') {
+                        j++;
                     }
-                } else break;
+                    if (buffer[j-1] == '\r') { j--; }
+                    buffer[j] = '|';
+                    buffer[j+1] = '\0';
+                    strcat(buffer, retrievedGenes[i].profile);
+                    strcat(buffer, "|\0");
+                    strcat(buffer, retrievedGenes[i].e_value);
+                    strcat(buffer, "\n\0");
+
+                    strcat(seq, buffer);
+                }
             }
         } else if (read) { strcat(seq, buffer); }
     }
@@ -267,7 +263,7 @@ const char** get_parameters(int argc, char ** argv, size_t *j) {
      * -c number of thread 
      */
     const char *hmm = "HMM_PROFILE/TAS/TAS_ncbi.hmm";
-    const char *e_value = "0.9e-45";
+    const char *e_value = "0.9e-30";
     const char *fa_out = default_output_name(argv[argc-1]);
     const char *cpu = "2";
     *j = 1;
@@ -340,27 +336,20 @@ void run_gra(
     printf("Fin hmmscan\n");
     // FILE *f = fopen("vrac/aug_test.txt", "r");
     MapGeneProfile *retrievedGenes = malloc(sizeof(MapGeneProfile) * n_gene);
-    retrievedGenes = parse_scan_res(scan_res, n_gene);
+    size_t n_retrieved_genes = parse_scan_res(scan_res, n_gene, retrievedGenes);
     printf("Fin parsage\n");
 
-    size_t n_retrieved_genes = 0;
-    for (int i = 0; i < n_gene; i++) {
-        if (retrievedGenes[i].gene != NULL) { n_retrieved_genes++; }
-        else break;
-    }
     printf("nombre de gène reconnus : %lu\n", n_retrieved_genes);
 
-    fasta_output(fasta, retrievedGenes, n_gene, fa_out);
-    for (int i = 0; i < n_gene; i++) {
-        if (retrievedGenes[i].gene != NULL) {
-            free(retrievedGenes[i].gene);
-            free(retrievedGenes[i].profile);
-            free(retrievedGenes[i].e_value);
-        }   
+    fasta_output(fasta, retrievedGenes, n_retrieved_genes, fa_out);
+    for (int i = 0; i < n_retrieved_genes; i++) {
+        free(retrievedGenes[i].gene);
+        free(retrievedGenes[i].profile);
+        free(retrievedGenes[i].e_value);
     }
     free(retrievedGenes);
-    retrievedGenes = NULL;
     // memset(retrievedGenes, 0, n_gene);
+    retrievedGenes = NULL;
 }
 
 int main(int argc, char **argv) {
@@ -379,18 +368,18 @@ int main(int argc, char **argv) {
     const char *cpu = params[3];
     char** seqfiles = &argv[j];
 
-    for (int i = 0; i < argc - j; i++) {
-        if (argc - j > 1) { fa_out = default_output_name(seqfiles[i]); }
-        run_gra(seqfiles[i], hmm, e_value, fa_out, cpu);
-    }
-
     int free_fa_out = 1;
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-' && argv[i][1] == 'o') {
             free_fa_out = 0;
         }
     }
-    if (free_fa_out) { free(fa_out); }
+
+    for (int i = 0; i < argc - j; i++) {
+        if (argc - j > 1) { fa_out = default_output_name(seqfiles[i]); }
+        run_gra(seqfiles[i], hmm, e_value, fa_out, cpu);
+        if (free_fa_out) { free(fa_out); }
+    }
 
     return EXIT_SUCCESS;
 }
