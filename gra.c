@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 struct String {
     size_t len;
@@ -95,6 +96,61 @@ struct String getFiles(int n, char **filenames) {
     struct String res = {total_fsize + 1, fasta};
 
     return res;
+}
+
+char complement(char c) {
+    switch (c) {
+        case 'A':
+            return 'T';
+            break;
+        case 'a':
+            return 't';
+            break;
+        case 'T':
+            return 'A';
+            break;
+        case 't':
+            return 'a';
+            break;
+        case 'G':
+            return 'C';
+            break;
+        case 'g':
+            return 'c';
+            break;
+        case 'C':
+            return 'G';
+            break;
+        case 'c':
+            return 'g';
+            break;
+        default:
+            return '\0';
+            break;
+    }
+}
+
+char* reverse_complement(char* seq, int crlf) {
+    size_t s = strlen(seq), j = 0, offset = 0;
+    char* rev = calloc(s + s/60 + 2, sizeof(char));
+    strcpy(rev, seq);
+    char c;
+    for (int i = s; i >= 0; i--) {
+        c = complement(seq[i]);
+        if (c != '\0') { rev[j++] = c; offset++; }
+        if (offset == 60) {
+            if (crlf) { rev[j++] = '\r'; rev[j++] = '\n'; }
+            else { rev[j++] = '\n'; }
+            offset = 0;
+        }
+    }
+    if (rev[j-1] != '\n') {
+        if (crlf) { rev[j++] = '\r'; rev[j++] = '\n'; }
+        else { rev[j++] = '\n'; }
+    }
+    rev[j] = '\0';
+
+    return rev;
 }
 
 const size_t count_gene(const char *filename) {
@@ -266,6 +322,7 @@ const char** get_parameters(int argc, char ** argv, size_t *j) {
     const char *e_value = "0.9e-30";
     const char *fa_out = default_output_name(argv[argc-1]);
     const char *cpu = "2";
+    const char *rc = "n";
     *j = 1;
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
@@ -277,6 +334,7 @@ const char** get_parameters(int argc, char ** argv, size_t *j) {
                         "Usage: gra [-options] <seqfile>\n\n"
                         "%-12s: list options.\n"
                         "%-12s: scan <seqfile> against <hmmdb>.\n"
+                        "%-12s: take the reverse complement of each sequence.\n"
                         "%-12s: set <x> as the E-value threshold. GRA will "
                             "only report sequences with an E-value <= <x>.\n"
                             "%-14sDefaults is 0.9e-45.\n"
@@ -286,7 +344,7 @@ const char** get_parameters(int argc, char ** argv, size_t *j) {
                             "each.\n"
                         "%-12s: Set the number of parallel worker threads to"
                             " <n>. On multicore machines, the default is 2.\n",
-                        "-h", "-p <hmmdb>", "-e <x>", "", "-o <f>", "", "", "-c <n>"
+                        "-h", "-p <hmmdb>", "-r", "-e <x>", "", "-o <f>", "", "", "-c <n>"
                     );
                     exit(EXIT_SUCCESS);
                     break;
@@ -306,6 +364,9 @@ const char** get_parameters(int argc, char ** argv, size_t *j) {
                     cpu = argv[++i];
                     // printf("Number of thread : %s\n", cpu);
                     break;
+                case 114:
+                    rc = "y";
+                    break;
                 default:
                     printf("Unknown option \"%s %s\", type gra -h to see options.\n",
                         argv[i], argv[i+1]);
@@ -313,10 +374,48 @@ const char** get_parameters(int argc, char ** argv, size_t *j) {
                     break;
             }
             *j = i + 1;
-        } else { }
+        }
     }
 
-    return (const char*[]){hmm, e_value, fa_out, cpu};
+    return (const char*[]){hmm, e_value, fa_out, cpu, rc};
+}
+
+char* write_rc_fasta(const char *fasta) {
+    size_t l_fa_rc_name = strlen(fasta) + strlen("_rc") + 1;
+    char *fa_rc_name = calloc(l_fa_rc_name, sizeof(char));
+    char *fasta_truncated = get_filename(fasta);
+    snprintf(fa_rc_name, l_fa_rc_name, "%s_rc.fasta", fasta_truncated);
+
+    FILE *fa_in = fopen(fasta, "r");
+    FILE *fa_rc = fopen(fa_rc_name, "w");
+
+    char seq[32768]; seq[0] = '\0';
+    char buffer[256];
+    size_t s;
+    int crlf = 0, d = 1;
+    while (fgets(buffer, sizeof(buffer), fa_in) != NULL) {
+        if (buffer[0] == '>') {
+            s = strlen(buffer);
+            if (buffer[s-1] == '\n' && buffer[s-2] == '\r') { crlf = 1; d = 0; }
+            if (seq[0] != '\0') {
+                char *rev = reverse_complement(seq, crlf);
+                fprintf(fa_rc, "%s", rev);
+                memset(seq, 0, sizeof(seq));
+            }
+            buffer[s-2+d] = '/';
+            buffer[s-1+d] = 'r';
+            buffer[s+d] = 'c';
+            if (crlf) { buffer[s+1] = '\r'; }
+            buffer[s+2] = '\n';
+            buffer[s+3] = '\0';
+            fprintf(fa_rc, "%s", buffer);
+        } else { strcat(seq, buffer); }
+    }
+    char *rev = reverse_complement(seq, crlf);
+    fprintf(fa_rc, "%s", rev);
+    free(rev);
+
+    return fa_rc_name;
 }
 
 void run_gra(
@@ -324,7 +423,8 @@ void run_gra(
     const char *hmm,
     const char *e_value,
     char *fa_out,
-    const char*cpu
+    const char *cpu,
+    const char *rc
 ) {
     printf("Args :\nfasta : %s\nhmm : %s\ne_value : %s\nfa_out : %s\ncpu : %s\n",
         fasta, hmm, e_value, fa_out, cpu);
@@ -332,7 +432,12 @@ void run_gra(
     const size_t n_gene = count_gene(fasta);
     printf("nombre de gène dans le fichier d'entrée : %lu\n", n_gene);
 
-    FILE *scan_res = hmmscan(fasta, hmm, e_value, cpu);
+    char* filename = fasta;
+    if (rc[0] == 'y') {
+        filename = write_rc_fasta(fasta);
+    }
+
+    FILE *scan_res = hmmscan(filename, hmm, e_value, cpu);
     printf("Fin hmmscan\n");
     // FILE *f = fopen("vrac/aug_test.txt", "r");
     MapGeneProfile *retrievedGenes = malloc(sizeof(MapGeneProfile) * n_gene);
@@ -341,7 +446,7 @@ void run_gra(
 
     printf("nombre de gène reconnus : %lu\n", n_retrieved_genes);
 
-    fasta_output(fasta, retrievedGenes, n_retrieved_genes, fa_out);
+    fasta_output(filename, retrievedGenes, n_retrieved_genes, fa_out);
     for (int i = 0; i < n_retrieved_genes; i++) {
         free(retrievedGenes[i].gene);
         free(retrievedGenes[i].profile);
@@ -353,7 +458,7 @@ void run_gra(
 }
 
 int main(int argc, char **argv) {
-    if (argc < 2 || argv[argc-2][0] == '-' ||
+    if (argc < 2 || (argv[argc-2][0] == '-' && argv[argc-2][1] != 'r') ||
         (argv[argc-1][0] == '-' && argv[argc-1][1] != 'h')) {
         fprintf(stderr, "Incorrect number of command line arguments.\n"
         "Usage: gra [-options] <seqfiles>\nType gra -h to see options.\n");
@@ -366,6 +471,7 @@ int main(int argc, char **argv) {
     const char *e_value = params[1];
     char *fa_out = params[2];
     const char *cpu = params[3];
+    const char* rc = params[4];
     char** seqfiles = &argv[j];
 
     int free_fa_out = 1;
@@ -377,7 +483,7 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < argc - j; i++) {
         if (argc - j > 1) { fa_out = default_output_name(seqfiles[i]); }
-        run_gra(seqfiles[i], hmm, e_value, fa_out, cpu);
+        run_gra(seqfiles[i], hmm, e_value, fa_out, cpu, rc);
         if (free_fa_out) { free(fa_out); }
     }
 
