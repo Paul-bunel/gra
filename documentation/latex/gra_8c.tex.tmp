@@ -1,0 +1,342 @@
+\hypertarget{gra_8c}{}\doxysection{Référence du fichier gra.\+c}
+\label{gra_8c}\index{gra.c@{gra.c}}
+
+
+Modifie un fichier multifasta pour retirer les gènes n\textquotesingle{}étant pas des gènes du goût, et ajoute dans le header des gènes restant la famille de gène correspondante ainsi que la E-\/value associée.  
+
+
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include $<$ctype.\+h$>$}\newline
+Graphe des dépendances par inclusion de gra.\+c\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structTokens}{Tokens}}
+\begin{DoxyCompactList}\small\item\em Structure permettant de stocker un tableau de chaînes de caractères ainsi que sa taille. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structMapGeneProfile}{Map\+Gene\+Profile}}
+\begin{DoxyCompactList}\small\item\em Structure permettant de stocker le header d\textquotesingle{}une séquence, le profil attribué et la E-\/value associée. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Fonctions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structTokens}{Tokens}} \mbox{\hyperlink{gra_8c_a8089c6476d23de460c09975dfd379cc1}{split\+\_\+string}} (const char $\ast$str, char $\ast$sep)
+\begin{DoxyCompactList}\small\item\em Divise une chaîne de caractère en plusieurs sous-\/chaîne selon un caractère séparateur. \end{DoxyCompactList}\item 
+char \mbox{\hyperlink{gra_8c_abfd34d3e86ae823c46390ae4d7dd9e41}{complement}} (char c)
+\begin{DoxyCompactList}\small\item\em Renvoie le nucléotide complémentaire. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{gra_8c_ab1bc41b0c56d689b58d2cece36c0cff7}{reverse\+\_\+complement}} (char $\ast$seq, int crlf)
+\begin{DoxyCompactList}\small\item\em Donne le complément inverse d\textquotesingle{}une séquence de nucléotide. \end{DoxyCompactList}\item 
+const size\+\_\+t \mbox{\hyperlink{gra_8c_a30a82cc14a89df97719105462da2122f}{count\+\_\+gene}} (const char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Compte le nombre de séquences dans un fichier F\+A\+S\+TA. \end{DoxyCompactList}\item 
+F\+I\+LE $\ast$ \mbox{\hyperlink{gra_8c_aa562d2849d02b9a5eb1794358f3e5d3a}{hmmscan}} (const char $\ast$fasta, const char $\ast$profile, const char $\ast$e\+\_\+value, const char $\ast$cpu)
+\begin{DoxyCompactList}\small\item\em Fonction appliquant la fonction {\itshape hmmscan} du logiciel H\+M\+M\+ER. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{gra_8c_aea79490014d87af309d665400f1e9ce9}{parse\+\_\+scan\+\_\+res}} (F\+I\+LE $\ast$scan\+\_\+res, const size\+\_\+t n\+\_\+gene, \mbox{\hyperlink{structMapGeneProfile}{Map\+Gene\+Profile}} $\ast$retrieved\+Genes)
+\begin{DoxyCompactList}\small\item\em Fonction de parsage du fichier table résultat de hmm\+\_\+scan. La fonction va récupérer chaque référence de gène présent dans le fichier résultat ainsi que le profil associé \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{gra_8c_a8bd19bfb2603c97b61970d49784044a9}{get\+\_\+filename}} (const char $\ast$filename)
+\begin{DoxyCompactList}\small\item\em Récupère le nom d\textquotesingle{}un fichier, en retirant le chemin et l\textquotesingle{}extension. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{gra_8c_a3e09ba0424907b13adb5d29e9906afe6}{default\+\_\+output\+\_\+name}} (const char $\ast$fasta)
+\begin{DoxyCompactList}\small\item\em Génère un nom par défaut pour le fichier de sortie. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{gra_8c_ae5b746752e91235aae6c0cf3acbda15e}{fasta\+\_\+output}} (const char $\ast$fasta, \mbox{\hyperlink{structMapGeneProfile}{Map\+Gene\+Profile}} $\ast$retrieved\+Genes, size\+\_\+t n\+\_\+retrieved\+\_\+genes, char $\ast$fa\+\_\+out\+\_\+name)
+\begin{DoxyCompactList}\small\item\em fonction écrivant dans un nouveau fichier fasta les gènes reconnus par les profils H\+MM, annoté avec le nom du profil l\textquotesingle{}ayant reconnu. \end{DoxyCompactList}\item 
+const char $\ast$$\ast$ \mbox{\hyperlink{gra_8c_ace6b396999ce9e18e66e6cd71ca31e18}{get\+\_\+parameters}} (int argc, char $\ast$$\ast$argv, size\+\_\+t $\ast$j)
+\begin{DoxyCompactList}\small\item\em Parse les arguments entrés en ligne de commande afin de récupérer les différents paramètres du programme, qui sont les suivants \+:~\newline
+Usage\+: gra \mbox{[}-\/options\mbox{]} $<$seqfile$>$~\newline
+~\newline
+-\/h \+: list options.~\newline
+-\/p $<$hmmdb$>$ \+: scan $<$seqfile$>$ against $<$hmmdb$>$.~\newline
+-\/r \+: take the reverse complement of each sequence.~\newline
+-\/e $<$x$>$ \+: set $<$x$>$ as the E-\/value threshold. G\+RA will only report sequences with an E-\/value $<$= $<$x$>$.~\newline
+ Defaults is 0.\+9e-\/45.~\newline
+-\/o $<$f$>$ \+: redirect output to the file $<$f$>$.~\newline
+ Default is \char`\"{}$<$seqfile$>$\+\_\+\+G\+R\+A\+\_\+\+O\+U\+T\+P\+U\+T.\+fasta\char`\"{}.~\newline
+ If there are multiple fasta as input, default is used for each.~\newline
+-\/c $<$n$>$ \+: Set the number of parallel worker threads to $<$n$>$. On multicore machines, the default is 2. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{gra_8c_af8518cbd57e67139f6e85747a769b2f8}{write\+\_\+rc\+\_\+fasta}} (const char $\ast$fasta)
+\begin{DoxyCompactList}\small\item\em Ecrit dans un nouveau fichier le complément inverse de chaque séquence du fichier fasta passé en paramètre. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{gra_8c_a3b4be22f671d1a781ee5e1ba969bfee8}{run\+\_\+gra}} (const char $\ast$fasta, const char $\ast$hmm, const char $\ast$e\+\_\+value, char $\ast$fa\+\_\+out, const char $\ast$cpu, const char $\ast$rc)
+\begin{DoxyCompactList}\small\item\em Lance une itération de G\+RA sur un fichier F\+A\+S\+TA. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{gra_8c_a3c04138a5bfe5d72780bb7e82a18e627}\label{gra_8c_a3c04138a5bfe5d72780bb7e82a18e627}} 
+int {\bfseries main} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Description détaillée}
+Modifie un fichier multifasta pour retirer les gènes n\textquotesingle{}étant pas des gènes du goût, et ajoute dans le header des gènes restant la famille de gène correspondante ainsi que la E-\/value associée. 
+
+\begin{DoxyAuthor}{Auteur}
+Paul Bunel (\href{mailto:paul.bunel@etu.umontpellier.fr}{\texttt{ paul.\+bunel@etu.\+umontpellier.\+fr}}) 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Paramètres}
+{\em file} & Le fichier fasta d\textquotesingle{}entrée contenant les gènes à tester \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+Un nouveau fichier fasta contenant les gènes validés annotés 
+\end{DoxyReturn}
+\begin{DoxyVersion}{Version}
+0.\+1 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+2022-\/06-\/30 
+\end{DoxyDate}
+
+
+\doxysubsection{Documentation des fonctions}
+\mbox{\Hypertarget{gra_8c_abfd34d3e86ae823c46390ae4d7dd9e41}\label{gra_8c_abfd34d3e86ae823c46390ae4d7dd9e41}} 
+\index{gra.c@{gra.c}!complement@{complement}}
+\index{complement@{complement}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{complement()}{complement()}}
+{\footnotesize\ttfamily char complement (\begin{DoxyParamCaption}\item[{char}]{c }\end{DoxyParamCaption})}
+
+
+
+Renvoie le nucléotide complémentaire. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em c} & un nucléotide \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+char le nucléotide complémentaire de c. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_a30a82cc14a89df97719105462da2122f}\label{gra_8c_a30a82cc14a89df97719105462da2122f}} 
+\index{gra.c@{gra.c}!count\_gene@{count\_gene}}
+\index{count\_gene@{count\_gene}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{count\_gene()}{count\_gene()}}
+{\footnotesize\ttfamily const size\+\_\+t count\+\_\+gene (\begin{DoxyParamCaption}\item[{const char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Compte le nombre de séquences dans un fichier F\+A\+S\+TA. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em filename} & nom du fichier F\+A\+S\+TA \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+const size\+\_\+t nombre de séquences 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_a3e09ba0424907b13adb5d29e9906afe6}\label{gra_8c_a3e09ba0424907b13adb5d29e9906afe6}} 
+\index{gra.c@{gra.c}!default\_output\_name@{default\_output\_name}}
+\index{default\_output\_name@{default\_output\_name}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{default\_output\_name()}{default\_output\_name()}}
+{\footnotesize\ttfamily char$\ast$ default\+\_\+output\+\_\+name (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fasta }\end{DoxyParamCaption})}
+
+
+
+Génère un nom par défaut pour le fichier de sortie. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em fasta} & nom du fichier F\+A\+S\+TA d\textquotesingle{}entrée \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+char$\ast$ nom du fichier F\+A\+S\+TA de sortie 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_ae5b746752e91235aae6c0cf3acbda15e}\label{gra_8c_ae5b746752e91235aae6c0cf3acbda15e}} 
+\index{gra.c@{gra.c}!fasta\_output@{fasta\_output}}
+\index{fasta\_output@{fasta\_output}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{fasta\_output()}{fasta\_output()}}
+{\footnotesize\ttfamily void fasta\+\_\+output (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fasta,  }\item[{\mbox{\hyperlink{structMapGeneProfile}{Map\+Gene\+Profile}} $\ast$}]{retrieved\+Genes,  }\item[{size\+\_\+t}]{n\+\_\+retrieved\+\_\+genes,  }\item[{char $\ast$}]{fa\+\_\+out\+\_\+name }\end{DoxyParamCaption})}
+
+
+
+fonction écrivant dans un nouveau fichier fasta les gènes reconnus par les profils H\+MM, annoté avec le nom du profil l\textquotesingle{}ayant reconnu. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em fasta} & le fichier fasta d\textquotesingle{}entrée contenant tous les gènes à tester \\
+\hline
+{\em retrieved\+Genes} & tableau de \mbox{\hyperlink{structMapGeneProfile}{Map\+Gene\+Profile}} contenant les gènes reconnus \\
+\hline
+{\em n\+\_\+retrieved\+\_\+genes} & le nombre de gènes reconnus \\
+\hline
+{\em fa\+\_\+out\+\_\+name} & le nom du fichier F\+A\+S\+TA de sortie \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{gra_8c_a8bd19bfb2603c97b61970d49784044a9}\label{gra_8c_a8bd19bfb2603c97b61970d49784044a9}} 
+\index{gra.c@{gra.c}!get\_filename@{get\_filename}}
+\index{get\_filename@{get\_filename}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{get\_filename()}{get\_filename()}}
+{\footnotesize\ttfamily char$\ast$ get\+\_\+filename (\begin{DoxyParamCaption}\item[{const char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+Récupère le nom d\textquotesingle{}un fichier, en retirant le chemin et l\textquotesingle{}extension. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em filename} & le chemin vers un fichier \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+char$\ast$ le nom tronqué du fichier 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_ace6b396999ce9e18e66e6cd71ca31e18}\label{gra_8c_ace6b396999ce9e18e66e6cd71ca31e18}} 
+\index{gra.c@{gra.c}!get\_parameters@{get\_parameters}}
+\index{get\_parameters@{get\_parameters}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{get\_parameters()}{get\_parameters()}}
+{\footnotesize\ttfamily const char$\ast$$\ast$ get\+\_\+parameters (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$$\ast$}]{argv,  }\item[{size\+\_\+t $\ast$}]{j }\end{DoxyParamCaption})}
+
+
+
+Parse les arguments entrés en ligne de commande afin de récupérer les différents paramètres du programme, qui sont les suivants \+:~\newline
+Usage\+: gra \mbox{[}-\/options\mbox{]} $<$seqfile$>$~\newline
+~\newline
+-\/h \+: list options.~\newline
+-\/p $<$hmmdb$>$ \+: scan $<$seqfile$>$ against $<$hmmdb$>$.~\newline
+-\/r \+: take the reverse complement of each sequence.~\newline
+-\/e $<$x$>$ \+: set $<$x$>$ as the E-\/value threshold. G\+RA will only report sequences with an E-\/value $<$= $<$x$>$.~\newline
+ Defaults is 0.\+9e-\/45.~\newline
+-\/o $<$f$>$ \+: redirect output to the file $<$f$>$.~\newline
+ Default is \char`\"{}$<$seqfile$>$\+\_\+\+G\+R\+A\+\_\+\+O\+U\+T\+P\+U\+T.\+fasta\char`\"{}.~\newline
+ If there are multiple fasta as input, default is used for each.~\newline
+-\/c $<$n$>$ \+: Set the number of parallel worker threads to $<$n$>$. On multicore machines, the default is 2. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em argc} & nombre d\textquotesingle{}argument \\
+\hline
+{\em argv} & les arguments \\
+\hline
+{\em j} & pointeur vers un size\+\_\+t qui sera modifié \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+char$\ast$$\ast$ Un tableau de chaînes de caractère contenant les valeurs de chaque paramètre 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_aa562d2849d02b9a5eb1794358f3e5d3a}\label{gra_8c_aa562d2849d02b9a5eb1794358f3e5d3a}} 
+\index{gra.c@{gra.c}!hmmscan@{hmmscan}}
+\index{hmmscan@{hmmscan}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{hmmscan()}{hmmscan()}}
+{\footnotesize\ttfamily F\+I\+LE$\ast$ hmmscan (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fasta,  }\item[{const char $\ast$}]{profile,  }\item[{const char $\ast$}]{e\+\_\+value,  }\item[{const char $\ast$}]{cpu }\end{DoxyParamCaption})}
+
+
+
+Fonction appliquant la fonction {\itshape hmmscan} du logiciel H\+M\+M\+ER. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em fasta} & le fichier F\+A\+S\+TA que l\textquotesingle{}on passe en paramètre de H\+M\+M\+ER \\
+\hline
+{\em profile} & le profil H\+MM à utiliser \\
+\hline
+{\em e\+\_\+value} & la E-\/value minimale à afficher \\
+\hline
+{\em cpu} & le nombre de threads que l\textquotesingle{}on veut utiliser \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+F\+I\+L\+E$\ast$ Un flux vers la sortie de H\+M\+M\+ER. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_aea79490014d87af309d665400f1e9ce9}\label{gra_8c_aea79490014d87af309d665400f1e9ce9}} 
+\index{gra.c@{gra.c}!parse\_scan\_res@{parse\_scan\_res}}
+\index{parse\_scan\_res@{parse\_scan\_res}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{parse\_scan\_res()}{parse\_scan\_res()}}
+{\footnotesize\ttfamily size\+\_\+t parse\+\_\+scan\+\_\+res (\begin{DoxyParamCaption}\item[{F\+I\+LE $\ast$}]{scan\+\_\+res,  }\item[{const size\+\_\+t}]{n\+\_\+gene,  }\item[{\mbox{\hyperlink{structMapGeneProfile}{Map\+Gene\+Profile}} $\ast$}]{retrieved\+Genes }\end{DoxyParamCaption})}
+
+
+
+Fonction de parsage du fichier table résultat de hmm\+\_\+scan. La fonction va récupérer chaque référence de gène présent dans le fichier résultat ainsi que le profil associé 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em scan\+\_\+res} & le flux vers la sortie de H\+M\+M\+ER \\
+\hline
+{\em n\+\_\+gene} & nombre de gène dans le fichier F\+A\+S\+TA en entrée du programme \\
+\hline
+{\em retrieved\+Genes} & tableau de \mbox{\hyperlink{structMapGeneProfile}{Map\+Gene\+Profile}} qui sera modifié dans la fonction \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+size\+\_\+t le nombre de gènes reconnus par H\+M\+M\+ER 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_ab1bc41b0c56d689b58d2cece36c0cff7}\label{gra_8c_ab1bc41b0c56d689b58d2cece36c0cff7}} 
+\index{gra.c@{gra.c}!reverse\_complement@{reverse\_complement}}
+\index{reverse\_complement@{reverse\_complement}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{reverse\_complement()}{reverse\_complement()}}
+{\footnotesize\ttfamily char$\ast$ reverse\+\_\+complement (\begin{DoxyParamCaption}\item[{char $\ast$}]{seq,  }\item[{int}]{crlf }\end{DoxyParamCaption})}
+
+
+
+Donne le complément inverse d\textquotesingle{}une séquence de nucléotide. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em seq} & une séquence de nucléotide \\
+\hline
+{\em crlf} & type de fichier \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+char$\ast$ Le complément inverse de seq. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_a3b4be22f671d1a781ee5e1ba969bfee8}\label{gra_8c_a3b4be22f671d1a781ee5e1ba969bfee8}} 
+\index{gra.c@{gra.c}!run\_gra@{run\_gra}}
+\index{run\_gra@{run\_gra}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{run\_gra()}{run\_gra()}}
+{\footnotesize\ttfamily void run\+\_\+gra (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fasta,  }\item[{const char $\ast$}]{hmm,  }\item[{const char $\ast$}]{e\+\_\+value,  }\item[{char $\ast$}]{fa\+\_\+out,  }\item[{const char $\ast$}]{cpu,  }\item[{const char $\ast$}]{rc }\end{DoxyParamCaption})}
+
+
+
+Lance une itération de G\+RA sur un fichier F\+A\+S\+TA. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em fasta} & Le nom du fichier F\+A\+S\+TA en entrée \\
+\hline
+{\em hmm} & Le nom du profil H\+MM à utiliser \\
+\hline
+{\em e\+\_\+value} & La E-\/value minimale à afficher \\
+\hline
+{\em fa\+\_\+out} & Le nom du fichier F\+A\+S\+TA en sortie \\
+\hline
+{\em cpu} & Le nombre de thread que l\textquotesingle{}on veut utiliser \\
+\hline
+{\em rc} & 0 = on récupère le fichier fasta, 1 = on prend le complément inverse de chaque séquence \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{gra_8c_a8089c6476d23de460c09975dfd379cc1}\label{gra_8c_a8089c6476d23de460c09975dfd379cc1}} 
+\index{gra.c@{gra.c}!split\_string@{split\_string}}
+\index{split\_string@{split\_string}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{split\_string()}{split\_string()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structTokens}{Tokens}} split\+\_\+string (\begin{DoxyParamCaption}\item[{const char $\ast$}]{str,  }\item[{char $\ast$}]{sep }\end{DoxyParamCaption})}
+
+
+
+Divise une chaîne de caractère en plusieurs sous-\/chaîne selon un caractère séparateur. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em str} & la chaîne de caractère que l\textquotesingle{}on veut diviser \\
+\hline
+{\em sep} & le séparateur \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+\mbox{\hyperlink{structTokens}{Tokens}} un élément de la structure \mbox{\hyperlink{structTokens}{Tokens}} contenant toutes les divisions de la chaîne str. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{gra_8c_af8518cbd57e67139f6e85747a769b2f8}\label{gra_8c_af8518cbd57e67139f6e85747a769b2f8}} 
+\index{gra.c@{gra.c}!write\_rc\_fasta@{write\_rc\_fasta}}
+\index{write\_rc\_fasta@{write\_rc\_fasta}!gra.c@{gra.c}}
+\doxysubsubsection{\texorpdfstring{write\_rc\_fasta()}{write\_rc\_fasta()}}
+{\footnotesize\ttfamily char$\ast$ write\+\_\+rc\+\_\+fasta (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fasta }\end{DoxyParamCaption})}
+
+
+
+Ecrit dans un nouveau fichier le complément inverse de chaque séquence du fichier fasta passé en paramètre. 
+
+
+\begin{DoxyParams}{Paramètres}
+{\em fasta} & Un fichier F\+A\+S\+TA \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Renvoie}
+char$\ast$ Le nom du fichier dans lequel il a écrit 
+\end{DoxyReturn}

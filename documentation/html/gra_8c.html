@@ -1,0 +1,648 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.17"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>GRA: Référence du fichier gra.c</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">GRA
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.8.17 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Recherche');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Recherche');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Fonctions</a>  </div>
+  <div class="headertitle">
+<div class="title">Référence du fichier gra.c</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Modifie un fichier multifasta pour retirer les gènes n'étant pas des gènes du goût, et ajoute dans le header des gènes restant la famille de gène correspondante ainsi que la E-value associée.  
+<a href="#details">Plus de détails...</a></p>
+<div class="textblock"><code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;stdio.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
+<code>#include &lt;ctype.h&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Graphe des dépendances par inclusion de gra.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="gra_8c__incl.png" border="0" usemap="#gra_8c" alt=""/></div>
+</div>
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTokens.html">Tokens</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure permettant de stocker un tableau de chaînes de caractères ainsi que sa taille.  <a href="structTokens.html#details">Plus de détails...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMapGeneProfile.html">MapGeneProfile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure permettant de stocker le header d'une séquence, le profil attribué et la E-value associée.  <a href="structMapGeneProfile.html#details">Plus de détails...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Fonctions</h2></td></tr>
+<tr class="memitem:a8089c6476d23de460c09975dfd379cc1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTokens.html">Tokens</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#a8089c6476d23de460c09975dfd379cc1">split_string</a> (const char *str, char *sep)</td></tr>
+<tr class="memdesc:a8089c6476d23de460c09975dfd379cc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divise une chaîne de caractère en plusieurs sous-chaîne selon un caractère séparateur.  <a href="gra_8c.html#a8089c6476d23de460c09975dfd379cc1">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a8089c6476d23de460c09975dfd379cc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfd34d3e86ae823c46390ae4d7dd9e41"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#abfd34d3e86ae823c46390ae4d7dd9e41">complement</a> (char c)</td></tr>
+<tr class="memdesc:abfd34d3e86ae823c46390ae4d7dd9e41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renvoie le nucléotide complémentaire.  <a href="gra_8c.html#abfd34d3e86ae823c46390ae4d7dd9e41">Plus de détails...</a><br /></td></tr>
+<tr class="separator:abfd34d3e86ae823c46390ae4d7dd9e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1bc41b0c56d689b58d2cece36c0cff7"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#ab1bc41b0c56d689b58d2cece36c0cff7">reverse_complement</a> (char *seq, int crlf)</td></tr>
+<tr class="memdesc:ab1bc41b0c56d689b58d2cece36c0cff7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Donne le complément inverse d'une séquence de nucléotide.  <a href="gra_8c.html#ab1bc41b0c56d689b58d2cece36c0cff7">Plus de détails...</a><br /></td></tr>
+<tr class="separator:ab1bc41b0c56d689b58d2cece36c0cff7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30a82cc14a89df97719105462da2122f"><td class="memItemLeft" align="right" valign="top">const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#a30a82cc14a89df97719105462da2122f">count_gene</a> (const char *filename)</td></tr>
+<tr class="memdesc:a30a82cc14a89df97719105462da2122f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compte le nombre de séquences dans un fichier FASTA.  <a href="gra_8c.html#a30a82cc14a89df97719105462da2122f">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a30a82cc14a89df97719105462da2122f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa562d2849d02b9a5eb1794358f3e5d3a"><td class="memItemLeft" align="right" valign="top">FILE *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#aa562d2849d02b9a5eb1794358f3e5d3a">hmmscan</a> (const char *fasta, const char *profile, const char *e_value, const char *cpu)</td></tr>
+<tr class="memdesc:aa562d2849d02b9a5eb1794358f3e5d3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fonction appliquant la fonction <em>hmmscan</em> du logiciel HMMER.  <a href="gra_8c.html#aa562d2849d02b9a5eb1794358f3e5d3a">Plus de détails...</a><br /></td></tr>
+<tr class="separator:aa562d2849d02b9a5eb1794358f3e5d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea79490014d87af309d665400f1e9ce9"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#aea79490014d87af309d665400f1e9ce9">parse_scan_res</a> (FILE *scan_res, const size_t n_gene, <a class="el" href="structMapGeneProfile.html">MapGeneProfile</a> *retrievedGenes)</td></tr>
+<tr class="memdesc:aea79490014d87af309d665400f1e9ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fonction de parsage du fichier table résultat de hmm_scan. La fonction va récupérer chaque référence de gène présent dans le fichier résultat ainsi que le profil associé  <a href="gra_8c.html#aea79490014d87af309d665400f1e9ce9">Plus de détails...</a><br /></td></tr>
+<tr class="separator:aea79490014d87af309d665400f1e9ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bd19bfb2603c97b61970d49784044a9"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#a8bd19bfb2603c97b61970d49784044a9">get_filename</a> (const char *filename)</td></tr>
+<tr class="memdesc:a8bd19bfb2603c97b61970d49784044a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Récupère le nom d'un fichier, en retirant le chemin et l'extension.  <a href="gra_8c.html#a8bd19bfb2603c97b61970d49784044a9">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a8bd19bfb2603c97b61970d49784044a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e09ba0424907b13adb5d29e9906afe6"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#a3e09ba0424907b13adb5d29e9906afe6">default_output_name</a> (const char *fasta)</td></tr>
+<tr class="memdesc:a3e09ba0424907b13adb5d29e9906afe6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Génère un nom par défaut pour le fichier de sortie.  <a href="gra_8c.html#a3e09ba0424907b13adb5d29e9906afe6">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a3e09ba0424907b13adb5d29e9906afe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5b746752e91235aae6c0cf3acbda15e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#ae5b746752e91235aae6c0cf3acbda15e">fasta_output</a> (const char *fasta, <a class="el" href="structMapGeneProfile.html">MapGeneProfile</a> *retrievedGenes, size_t n_retrieved_genes, char *fa_out_name)</td></tr>
+<tr class="memdesc:ae5b746752e91235aae6c0cf3acbda15e"><td class="mdescLeft">&#160;</td><td class="mdescRight">fonction écrivant dans un nouveau fichier fasta les gènes reconnus par les profils HMM, annoté avec le nom du profil l'ayant reconnu.  <a href="gra_8c.html#ae5b746752e91235aae6c0cf3acbda15e">Plus de détails...</a><br /></td></tr>
+<tr class="separator:ae5b746752e91235aae6c0cf3acbda15e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace6b396999ce9e18e66e6cd71ca31e18"><td class="memItemLeft" align="right" valign="top">const char **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#ace6b396999ce9e18e66e6cd71ca31e18">get_parameters</a> (int argc, char **argv, size_t *j)</td></tr>
+<tr class="memdesc:ace6b396999ce9e18e66e6cd71ca31e18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse les arguments entrés en ligne de commande afin de récupérer les différents paramètres du programme, qui sont les suivants :<br  />
+Usage: gra [-options] &lt;seqfile&gt;<br  />
+<br  />
+-h : list options.<br  />
+-p &lt;hmmdb&gt; : scan &lt;seqfile&gt; against &lt;hmmdb&gt;.<br  />
+-r : take the reverse complement of each sequence.<br  />
+-e &lt;x&gt; : set &lt;x&gt; as the E-value threshold. GRA will only report sequences with an E-value &lt;= &lt;x&gt;.<br  />
+ Defaults is 0.9e-45.<br  />
+-o &lt;f&gt; : redirect output to the file &lt;f&gt;.<br  />
+ Default is "&lt;seqfile&gt;_GRA_OUTPUT.fasta".<br  />
+ If there are multiple fasta as input, default is used for each.<br  />
+-c &lt;n&gt; : Set the number of parallel worker threads to &lt;n&gt;. On multicore machines, the default is 2.  <a href="gra_8c.html#ace6b396999ce9e18e66e6cd71ca31e18">Plus de détails...</a><br /></td></tr>
+<tr class="separator:ace6b396999ce9e18e66e6cd71ca31e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8518cbd57e67139f6e85747a769b2f8"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#af8518cbd57e67139f6e85747a769b2f8">write_rc_fasta</a> (const char *fasta)</td></tr>
+<tr class="memdesc:af8518cbd57e67139f6e85747a769b2f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ecrit dans un nouveau fichier le complément inverse de chaque séquence du fichier fasta passé en paramètre.  <a href="gra_8c.html#af8518cbd57e67139f6e85747a769b2f8">Plus de détails...</a><br /></td></tr>
+<tr class="separator:af8518cbd57e67139f6e85747a769b2f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b4be22f671d1a781ee5e1ba969bfee8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gra_8c.html#a3b4be22f671d1a781ee5e1ba969bfee8">run_gra</a> (const char *fasta, const char *hmm, const char *e_value, char *fa_out, const char *cpu, const char *rc)</td></tr>
+<tr class="memdesc:a3b4be22f671d1a781ee5e1ba969bfee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lance une itération de GRA sur un fichier FASTA.  <a href="gra_8c.html#a3b4be22f671d1a781ee5e1ba969bfee8">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a3b4be22f671d1a781ee5e1ba969bfee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c04138a5bfe5d72780bb7e82a18e627"><td class="memItemLeft" align="right" valign="top"><a id="a3c04138a5bfe5d72780bb7e82a18e627"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>main</b> (int argc, char **argv)</td></tr>
+<tr class="separator:a3c04138a5bfe5d72780bb7e82a18e627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Description détaillée</h2>
+<div class="textblock"><p>Modifie un fichier multifasta pour retirer les gènes n'étant pas des gènes du goût, et ajoute dans le header des gènes restant la famille de gène correspondante ainsi que la E-value associée. </p>
+<dl class="section author"><dt>Auteur</dt><dd>Paul Bunel (<a href="#" onclick="location.href='mai'+'lto:'+'pau'+'l.'+'bun'+'el'+'@et'+'u.'+'umo'+'nt'+'pel'+'li'+'er.'+'fr'; return false;">paul.<span style="display: none;">.nosp@m.</span>bune<span style="display: none;">.nosp@m.</span>l@etu<span style="display: none;">.nosp@m.</span>.umo<span style="display: none;">.nosp@m.</span>ntpel<span style="display: none;">.nosp@m.</span>lier<span style="display: none;">.nosp@m.</span>.fr</a>) </dd></dl>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file</td><td>Le fichier fasta d'entrée contenant les gènes à tester </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>Un nouveau fichier fasta contenant les gènes validés annotés </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>0.1 </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2022-06-30 </dd></dl>
+</div><h2 class="groupheader">Documentation des fonctions</h2>
+<a id="abfd34d3e86ae823c46390ae4d7dd9e41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfd34d3e86ae823c46390ae4d7dd9e41">&#9670;&nbsp;</a></span>complement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char complement </td>
+          <td>(</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Renvoie le nucléotide complémentaire. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>un nucléotide </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>char le nucléotide complémentaire de c. </dd></dl>
+
+</div>
+</div>
+<a id="a30a82cc14a89df97719105462da2122f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30a82cc14a89df97719105462da2122f">&#9670;&nbsp;</a></span>count_gene()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const size_t count_gene </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compte le nombre de séquences dans un fichier FASTA. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>nom du fichier FASTA </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>const size_t nombre de séquences </dd></dl>
+
+</div>
+</div>
+<a id="a3e09ba0424907b13adb5d29e9906afe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e09ba0424907b13adb5d29e9906afe6">&#9670;&nbsp;</a></span>default_output_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* default_output_name </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fasta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Génère un nom par défaut pour le fichier de sortie. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fasta</td><td>nom du fichier FASTA d'entrée </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>char* nom du fichier FASTA de sortie </dd></dl>
+
+</div>
+</div>
+<a id="ae5b746752e91235aae6c0cf3acbda15e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5b746752e91235aae6c0cf3acbda15e">&#9670;&nbsp;</a></span>fasta_output()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void fasta_output </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fasta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structMapGeneProfile.html">MapGeneProfile</a> *&#160;</td>
+          <td class="paramname"><em>retrievedGenes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n_retrieved_genes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>fa_out_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>fonction écrivant dans un nouveau fichier fasta les gènes reconnus par les profils HMM, annoté avec le nom du profil l'ayant reconnu. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fasta</td><td>le fichier fasta d'entrée contenant tous les gènes à tester </td></tr>
+    <tr><td class="paramname">retrievedGenes</td><td>tableau de <a class="el" href="structMapGeneProfile.html" title="Structure permettant de stocker le header d&#39;une séquence, le profil attribué et la E-value associée.">MapGeneProfile</a> contenant les gènes reconnus </td></tr>
+    <tr><td class="paramname">n_retrieved_genes</td><td>le nombre de gènes reconnus </td></tr>
+    <tr><td class="paramname">fa_out_name</td><td>le nom du fichier FASTA de sortie </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8bd19bfb2603c97b61970d49784044a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bd19bfb2603c97b61970d49784044a9">&#9670;&nbsp;</a></span>get_filename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* get_filename </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Récupère le nom d'un fichier, en retirant le chemin et l'extension. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>le chemin vers un fichier </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>char* le nom tronqué du fichier </dd></dl>
+
+</div>
+</div>
+<a id="ace6b396999ce9e18e66e6cd71ca31e18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace6b396999ce9e18e66e6cd71ca31e18">&#9670;&nbsp;</a></span>get_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char** get_parameters </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>argv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>j</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse les arguments entrés en ligne de commande afin de récupérer les différents paramètres du programme, qui sont les suivants :<br  />
+Usage: gra [-options] &lt;seqfile&gt;<br  />
+<br  />
+-h : list options.<br  />
+-p &lt;hmmdb&gt; : scan &lt;seqfile&gt; against &lt;hmmdb&gt;.<br  />
+-r : take the reverse complement of each sequence.<br  />
+-e &lt;x&gt; : set &lt;x&gt; as the E-value threshold. GRA will only report sequences with an E-value &lt;= &lt;x&gt;.<br  />
+ Defaults is 0.9e-45.<br  />
+-o &lt;f&gt; : redirect output to the file &lt;f&gt;.<br  />
+ Default is "&lt;seqfile&gt;_GRA_OUTPUT.fasta".<br  />
+ If there are multiple fasta as input, default is used for each.<br  />
+-c &lt;n&gt; : Set the number of parallel worker threads to &lt;n&gt;. On multicore machines, the default is 2. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argc</td><td>nombre d'argument </td></tr>
+    <tr><td class="paramname">argv</td><td>les arguments </td></tr>
+    <tr><td class="paramname">j</td><td>pointeur vers un size_t qui sera modifié </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>char** Un tableau de chaînes de caractère contenant les valeurs de chaque paramètre </dd></dl>
+
+</div>
+</div>
+<a id="aa562d2849d02b9a5eb1794358f3e5d3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa562d2849d02b9a5eb1794358f3e5d3a">&#9670;&nbsp;</a></span>hmmscan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">FILE* hmmscan </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fasta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>profile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>e_value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>cpu</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fonction appliquant la fonction <em>hmmscan</em> du logiciel HMMER. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fasta</td><td>le fichier FASTA que l'on passe en paramètre de HMMER </td></tr>
+    <tr><td class="paramname">profile</td><td>le profil HMM à utiliser </td></tr>
+    <tr><td class="paramname">e_value</td><td>la E-value minimale à afficher </td></tr>
+    <tr><td class="paramname">cpu</td><td>le nombre de threads que l'on veut utiliser </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>FILE* Un flux vers la sortie de HMMER. </dd></dl>
+
+</div>
+</div>
+<a id="aea79490014d87af309d665400f1e9ce9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea79490014d87af309d665400f1e9ce9">&#9670;&nbsp;</a></span>parse_scan_res()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t parse_scan_res </td>
+          <td>(</td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>scan_res</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>n_gene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structMapGeneProfile.html">MapGeneProfile</a> *&#160;</td>
+          <td class="paramname"><em>retrievedGenes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fonction de parsage du fichier table résultat de hmm_scan. La fonction va récupérer chaque référence de gène présent dans le fichier résultat ainsi que le profil associé </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scan_res</td><td>le flux vers la sortie de HMMER </td></tr>
+    <tr><td class="paramname">n_gene</td><td>nombre de gène dans le fichier FASTA en entrée du programme </td></tr>
+    <tr><td class="paramname">retrievedGenes</td><td>tableau de <a class="el" href="structMapGeneProfile.html" title="Structure permettant de stocker le header d&#39;une séquence, le profil attribué et la E-value associée.">MapGeneProfile</a> qui sera modifié dans la fonction </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>size_t le nombre de gènes reconnus par HMMER </dd></dl>
+
+</div>
+</div>
+<a id="ab1bc41b0c56d689b58d2cece36c0cff7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1bc41b0c56d689b58d2cece36c0cff7">&#9670;&nbsp;</a></span>reverse_complement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* reverse_complement </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>seq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>crlf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Donne le complément inverse d'une séquence de nucléotide. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seq</td><td>une séquence de nucléotide </td></tr>
+    <tr><td class="paramname">crlf</td><td>type de fichier </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>char* Le complément inverse de seq. </dd></dl>
+
+</div>
+</div>
+<a id="a3b4be22f671d1a781ee5e1ba969bfee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b4be22f671d1a781ee5e1ba969bfee8">&#9670;&nbsp;</a></span>run_gra()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void run_gra </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fasta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>hmm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>e_value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>fa_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>cpu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>rc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lance une itération de GRA sur un fichier FASTA. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fasta</td><td>Le nom du fichier FASTA en entrée </td></tr>
+    <tr><td class="paramname">hmm</td><td>Le nom du profil HMM à utiliser </td></tr>
+    <tr><td class="paramname">e_value</td><td>La E-value minimale à afficher </td></tr>
+    <tr><td class="paramname">fa_out</td><td>Le nom du fichier FASTA en sortie </td></tr>
+    <tr><td class="paramname">cpu</td><td>Le nombre de thread que l'on veut utiliser </td></tr>
+    <tr><td class="paramname">rc</td><td>0 = on récupère le fichier fasta, 1 = on prend le complément inverse de chaque séquence </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8089c6476d23de460c09975dfd379cc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8089c6476d23de460c09975dfd379cc1">&#9670;&nbsp;</a></span>split_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structTokens.html">Tokens</a> split_string </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>sep</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Divise une chaîne de caractère en plusieurs sous-chaîne selon un caractère séparateur. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>la chaîne de caractère que l'on veut diviser </td></tr>
+    <tr><td class="paramname">sep</td><td>le séparateur </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd><a class="el" href="structTokens.html" title="Structure permettant de stocker un tableau de chaînes de caractères ainsi que sa taille.">Tokens</a> un élément de la structure <a class="el" href="structTokens.html" title="Structure permettant de stocker un tableau de chaînes de caractères ainsi que sa taille.">Tokens</a> contenant toutes les divisions de la chaîne str. </dd></dl>
+
+</div>
+</div>
+<a id="af8518cbd57e67139f6e85747a769b2f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8518cbd57e67139f6e85747a769b2f8">&#9670;&nbsp;</a></span>write_rc_fasta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* write_rc_fasta </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fasta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ecrit dans un nouveau fichier le complément inverse de chaque séquence du fichier fasta passé en paramètre. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fasta</td><td>Un fichier FASTA </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>char* Le nom du fichier dans lequel il a écrit </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.17
+</small></address>
+</body>
+</html>

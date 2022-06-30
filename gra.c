@@ -3,11 +3,11 @@
  * @author Paul Bunel (paul.bunel@etu.umontpellier.fr)
  * @brief Modifie un fichier multifasta pour retirer les gènes n'étant pas des
  * gènes du goût, et ajoute dans le header des gènes restant la famille de gène
- * correspondante ainsi que son état (fonctionnel/pseudogène) 
+ * correspondante ainsi que la E-value associée
  * @param file Le fichier fasta d'entrée contenant les gènes à tester
  * @return Un nouveau fichier fasta contenant les gènes validés annotés
  * @version 0.1
- * @date 2022-05-13
+ * @date 2022-06-30
  */
 
 #include <stdlib.h>
@@ -16,22 +16,33 @@
 #include <unistd.h>
 #include <ctype.h>
 
-struct String {
-    size_t len;
-    char *str;
-};
-
+/**
+ * @brief Structure permettant de stocker un tableau de chaînes de caractères
+ * ainsi que sa taille.
+ */
 typedef struct Tokens {
     size_t size;
     char **tokens;
 } Tokens;
 
+/**
+ * @brief Structure permettant de stocker le header d'une séquence, le profil
+ * attribué et la E-value associée
+ */
 typedef struct MapGeneProfile {
     char *gene;
     char *profile;
     char *e_value;
 } MapGeneProfile;
 
+/**
+ * @brief Divise une chaîne de caractère en plusieurs sous-chaîne selon un
+ * caractère séparateur.
+ * @param str la chaîne de caractère que l'on veut diviser
+ * @param sep le séparateur
+ * @return Tokens un élément de la structure Tokens contenant toutes les
+ * divisions de la chaîne str.
+ */
 Tokens split_string(const char *str, char *sep) {
     size_t count_tokens = 0;
     int c = 0;
@@ -60,44 +71,11 @@ Tokens split_string(const char *str, char *sep) {
     return t;
 }
 
-struct String getFiles(int n, char **filenames) {
-    FILE **files = calloc(n, sizeof(FILE*));
-
-    for (int i = 0; i < n; i++) {
-        files[i] = fopen(filenames[i], "r");
-        if (files[i] == NULL) {
-            fprintf(stderr, "Impossible d'ouvrir le fichier %s\n", filenames[i]);
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    int total_fsize = 0;
-    int *sizes = calloc(n, sizeof(int));
-    for (int i = 0; i < n; i++) {
-        fseek(files[i], 0, SEEK_END);
-        total_fsize += ftell(files[i]);
-        sizes[i] = ftell(files[i]);
-        fseek(files[i], 0, SEEK_SET);
-    }
-
-    printf("Taille du premier fichier : %d, taille totale : %d\n", sizes[0], total_fsize);
-
-    char *fasta = calloc(total_fsize + 1, sizeof(char));
-    char *buffer = calloc(total_fsize + 1, sizeof(char));
-
-    for (int i = 0; i < n; i++) {
-        fread(buffer, sizes[i], 1, files[i]);
-        strcat(fasta, buffer);
-        fclose(files[i]);
-    }
-
-    fasta[total_fsize] = '\0';
-
-    struct String res = {total_fsize + 1, fasta};
-
-    return res;
-}
-
+/**
+ * @brief Renvoie le nucléotide complémentaire
+ * @param c un nucléotide
+ * @return char le nucléotide complémentaire de c.
+ */
 char complement(char c) {
     switch (c) {
         case 'A':
@@ -130,6 +108,12 @@ char complement(char c) {
     }
 }
 
+/**
+ * @brief Donne le complément inverse d'une séquence de nucléotide
+ * @param seq une séquence de nucléotide
+ * @param crlf type de fichier
+ * @return char* Le complément inverse de seq.
+ */
 char* reverse_complement(char* seq, int crlf) {
     size_t s = strlen(seq), j = 0, offset = 0;
     char* rev = calloc(s + s/60 + 2, sizeof(char));
@@ -153,6 +137,11 @@ char* reverse_complement(char* seq, int crlf) {
     return rev;
 }
 
+/**
+ * @brief Compte le nombre de séquences dans un fichier FASTA.
+ * @param filename nom du fichier FASTA
+ * @return const size_t nombre de séquences
+ */
 const size_t count_gene(const char *filename) {
     FILE *fd = fopen(filename, "r");
     char buffer[256];
@@ -165,15 +154,16 @@ const size_t count_gene(const char *filename) {
     return n_gene;
 }
 
+/**
+ * @brief Fonction appliquant la fonction *hmmscan* du logiciel HMMER
+ * @param fasta le fichier FASTA que l'on passe en paramètre de HMMER
+ * @param profile le profil HMM à utiliser
+ * @param e_value la E-value minimale à afficher
+ * @param cpu le nombre de threads que l'on veut utiliser
+ * @return FILE* Un flux vers la sortie de HMMER.
+ */
 FILE* hmmscan(const char *fasta, const char *profile, const char *e_value,
                                                            const char *cpu) {
-    /**
-        hmmscan -o "/dev/null" \
-        --tblout "RESULTS/${name^^}/res_$DBname.txt" \
-        --qformat $format \
-        "HMM_PROFILE/${name^^}/$name.hmm" \
-        $db
-     */
     char *fun = "/bin/bash -c '"
         "hmmscan -o /dev/null "
         "--tblout /dev/stdout "
@@ -201,8 +191,11 @@ FILE* hmmscan(const char *fasta, const char *profile, const char *e_value,
  * @brief Fonction de parsage du fichier table résultat de hmm_scan. La fonction
  * va récupérer chaque référence de gène présent dans le fichier résultat ainsi
  * que le profil associé
- * @param scan_res 
- * @return Dictionnaire associant une référence de gène et son profil attribué
+ * @param scan_res le flux vers la sortie de HMMER
+ * @param n_gene nombre de gène dans le fichier FASTA en entrée du programme
+ * @param retrievedGenes tableau de MapGeneProfile qui sera modifié dans la
+ * fonction
+ * @return size_t le nombre de gènes reconnus par HMMER
  */
 size_t parse_scan_res(
     FILE *scan_res,
@@ -239,6 +232,11 @@ size_t parse_scan_res(
     return cpt;
 }
 
+/**
+ * @brief Récupère le nom d'un fichier, en retirant le chemin et l'extension.
+ * @param filename le chemin vers un fichier
+ * @return char* le nom tronqué du fichier
+ */
 char* get_filename(const char* filename) {
     Tokens tokens = split_string(filename, "/");
     int i;
@@ -248,6 +246,11 @@ char* get_filename(const char* filename) {
     return raw_filename.tokens[0];
 }
 
+/**
+ * @brief Génère un nom par défaut pour le fichier de sortie
+ * @param fasta nom du fichier FASTA d'entrée
+ * @return char* nom du fichier FASTA de sortie
+ */
 char* default_output_name(const char* fasta) {
     char *fasta_truncated = get_filename(fasta);
     size_t l_fa_out_name = strlen(fasta_truncated) + strlen("_GRA_OUTPUT.fasta") + 1;
@@ -261,8 +264,9 @@ char* default_output_name(const char* fasta) {
  * @brief fonction écrivant dans un nouveau fichier fasta les gènes reconnus
  * par les profils HMM, annoté avec le nom du profil l'ayant reconnu.
  * @param fasta le fichier fasta d'entrée contenant tous les gènes à tester
- * @param retrievedGenes les gènes reconnus
- * @param n_gene le nombre de gènes dans le fichier fasta d'entrée
+ * @param retrievedGenes tableau de MapGeneProfile contenant les gènes reconnus
+ * @param n_retrieved_genes le nombre de gènes reconnus
+ * @param fa_out_name le nom du fichier FASTA de sortie
  */
 void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes,
                                     size_t n_retrieved_genes, char* fa_out_name) {
@@ -307,17 +311,27 @@ void fasta_output(const char* fasta, MapGeneProfile *retrievedGenes,
     fclose(fa_out);
 }
 
-const char** get_parameters(int argc, char ** argv, size_t *j) {
-    /**
-     * @brief Parse les arguments entrés en ligne de commande afin de récupérer
-     * les différents paramètres du programme
-     * ./gra <seqfile>
-     * -h help
-     * -p hmm profile
-     * -e e_value threshold
-     * -o output file
-     * -c number of thread 
-     */
+/**
+ * @brief Parse les arguments entrés en ligne de commande afin de récupérer
+ * les différents paramètres du programme, qui sont les suivants :\n
+ * Usage: gra [-options] <seqfile>\n
+ * \n
+ * -h          : list options.\n
+ * -p <hmmdb>  : scan <seqfile> against <hmmdb>.\n
+ * -r          : take the reverse complement of each sequence.\n
+ * -e <x>      : set <x> as the E-value threshold. GRA will only report sequences with an E-value <= <x>.\n
+ *               Defaults is 0.9e-45.\n
+ * -o <f>      : redirect output to the file <f>.\n
+ *               Default is "<seqfile>_GRA_OUTPUT.fasta".\n
+ *               If there are multiple fasta as input, default is used for each.\n
+ * -c <n>      : Set the number of parallel worker threads to <n>. On multicore machines, the default is 2.
+ * @param argc nombre d'argument
+ * @param argv les arguments
+ * @param j pointeur vers un size_t qui sera modifié
+ * @return char** Un tableau de chaînes de caractère contenant les valeurs de
+ * chaque paramètre
+ */
+const char** get_parameters(int argc, char **argv, size_t *j) {
     const char *hmm = "HMM_PROFILE/TAS/TAS_ncbi.hmm";
     const char *e_value = "0.9e-30";
     const char *fa_out = default_output_name(argv[argc-1]);
@@ -380,6 +394,12 @@ const char** get_parameters(int argc, char ** argv, size_t *j) {
     return (const char*[]){hmm, e_value, fa_out, cpu, rc};
 }
 
+/**
+ * @brief Ecrit dans un nouveau fichier le complément inverse de chaque séquence
+ * du fichier fasta passé en paramètre
+ * @param fasta Un fichier FASTA
+ * @return char* Le nom du fichier dans lequel il a écrit
+ */
 char* write_rc_fasta(const char *fasta) {
     size_t l_fa_rc_name = strlen(fasta) + strlen("_rc") + 1;
     char *fa_rc_name = calloc(l_fa_rc_name, sizeof(char));
@@ -418,6 +438,16 @@ char* write_rc_fasta(const char *fasta) {
     return fa_rc_name;
 }
 
+/**
+ * @brief Lance une itération de GRA sur un fichier FASTA
+ * @param fasta Le nom du fichier FASTA en entrée
+ * @param hmm Le nom du profil HMM à utiliser
+ * @param e_value La E-value minimale à afficher
+ * @param fa_out Le nom du fichier FASTA en sortie
+ * @param cpu Le nombre de thread que l'on veut utiliser
+ * @param rc 0 = on récupère le fichier fasta, 1 = on prend le complément
+ * inverse de chaque séquence
+ */
 void run_gra(
     const char *fasta,
     const char *hmm,
