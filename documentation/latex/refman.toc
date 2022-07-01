@@ -1,0 +1,28 @@
+\@ifundefined {etoctocstyle}{\let \etoc@startlocaltoc \@gobble \let \etoc@settocdepth \@gobble \let \etoc@depthtag \@gobble \let \etoc@setlocaltop \@gobble }{}
+\babel@toc {nil}{}
+\contentsline {chapter}{\numberline {1}gra}{1}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Index des classes}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Liste des classes}{3}{section.2.1}%
+\contentsline {chapter}{\numberline {3}Index des fichiers}{5}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Liste des fichiers}{5}{section.3.1}%
+\contentsline {chapter}{\numberline {4}Documentation des classes}{7}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Référence de la structure Map\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Gene\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Profile}{7}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Description détaillée}{7}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}Référence de la structure Tokens}{7}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Description détaillée}{7}{subsection.4.2.1}%
+\contentsline {chapter}{\numberline {5}Documentation des fichiers}{9}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Référence du fichier gra.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}c}{9}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Description détaillée}{10}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Documentation des fonctions}{11}{subsection.5.1.2}%
+\contentsline {subsubsection}{\numberline {5.1.2.1}complement()}{11}{subsubsection.5.1.2.1}%
+\contentsline {subsubsection}{\numberline {5.1.2.2}count\_gene()}{11}{subsubsection.5.1.2.2}%
+\contentsline {subsubsection}{\numberline {5.1.2.3}default\_output\_name()}{12}{subsubsection.5.1.2.3}%
+\contentsline {subsubsection}{\numberline {5.1.2.4}fasta\_output()}{12}{subsubsection.5.1.2.4}%
+\contentsline {subsubsection}{\numberline {5.1.2.5}get\_filename()}{12}{subsubsection.5.1.2.5}%
+\contentsline {subsubsection}{\numberline {5.1.2.6}get\_parameters()}{13}{subsubsection.5.1.2.6}%
+\contentsline {subsubsection}{\numberline {5.1.2.7}hmmscan()}{13}{subsubsection.5.1.2.7}%
+\contentsline {subsubsection}{\numberline {5.1.2.8}parse\_scan\_res()}{14}{subsubsection.5.1.2.8}%
+\contentsline {subsubsection}{\numberline {5.1.2.9}reverse\_complement()}{14}{subsubsection.5.1.2.9}%
+\contentsline {subsubsection}{\numberline {5.1.2.10}run\_gra()}{15}{subsubsection.5.1.2.10}%
+\contentsline {subsubsection}{\numberline {5.1.2.11}split\_string()}{15}{subsubsection.5.1.2.11}%
+\contentsline {subsubsection}{\numberline {5.1.2.12}write\_rc\_fasta()}{16}{subsubsection.5.1.2.12}%
