@@ -85,6 +85,9 @@ Vomeronasal Mammalia RefSeq :
     + RefSeq filter + mRNA filter
     -> 1226 results, 2 artiodactyls, not cetaceans
 
+OR cetaceans :
+    olfactory receptor[All Fields] AND <organism>[Organism] AND biomol_mrna[PROP]
+
 Megaptera Novaeangliae genes :
     txid9773[porgn] NOT TAS1R*[Title] NOT TAS2R[Title] NOT mitochondrion[Title]
     NOT mitochondrial[Title] NOT clone[Title] NOT similar[Title]

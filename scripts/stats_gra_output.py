@@ -34,8 +34,9 @@ def stats_results(res_file, *in_files):
         gene_res[accession] = (profile, evalue)
 
     # [print(f"{key :<30}: {value}") for key, value in gene_res.items()]        
-
+    dico = {}
     for file in in_files:
+        dico[file] = 0
         profile = re.search("TAS[12]R[123]*", file)
         if profile:
             profile = profile[0]
@@ -54,13 +55,15 @@ def stats_results(res_file, *in_files):
                     fn += 1
             else:
                 if accession in gene_res:# and float(gene_res[accession][1]) < 0.9e-45:
-                    print(record.description, gene_res[accession])
+                    # print(record.description, gene_res[accession])
                     # print("Le gene", accession, ",ne devant pas être reconnu, à",
                         # "été identifié au profil", gene_res[accession], "par erreur")
+                    dico[file] += 1
                     fp += 1
                 else:
                     tn += 1
 
+    print(dico)
     print("Nombre de faux positifs : %s, nombre de faux négatifs : %s" % (fp, fn),
           "Nombre de vrais positifs : %s, nombre de vrais négatifs : %s" % (tp, tn))
 
